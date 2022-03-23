@@ -1,16 +1,16 @@
-import { getStatuses } from '../../lib/statuses'
-import { Key } from './Key'
-import { useEffect } from 'react'
-import { ENTER_TEXT, DELETE_TEXT } from '../../constants/strings'
-import { localeAwareUpperCase } from '../../lib/words'
+import { getStatuses } from '../../lib/statuses';
+import { Key } from './Key';
+import { useEffect } from 'react';
+import { ENTER_TEXT, DELETE_TEXT } from '../../constants/strings';
+import { localeAwareUpperCase } from '../../lib/words';
 
 type Props = {
-  onChar: (value: string) => void
-  onDelete: () => void
-  onEnter: () => void
-  guesses: string[]
-  isRevealing?: boolean
-}
+  onChar: (value: string) => void;
+  onDelete: () => void;
+  onEnter: () => void;
+  guesses: string[];
+  isRevealing?: boolean;
+};
 
 export const Keyboard = ({
   onChar,
@@ -19,37 +19,37 @@ export const Keyboard = ({
   guesses,
   isRevealing,
 }: Props) => {
-  const charStatuses = getStatuses(guesses)
+  const charStatuses = getStatuses(guesses);
 
   const onClick = (value: string) => {
     if (value === 'ENTER') {
-      onEnter()
+      onEnter();
     } else if (value === 'DELETE') {
-      onDelete()
+      onDelete();
     } else {
-      onChar(value)
+      onChar(value);
     }
-  }
+  };
 
   useEffect(() => {
     const listener = (e: KeyboardEvent) => {
       if (e.code === 'Enter') {
-        onEnter()
+        onEnter();
       } else if (e.code === 'Backspace') {
-        onDelete()
+        onDelete();
       } else {
-        const key = localeAwareUpperCase(e.key)
+        const key = localeAwareUpperCase(e.key);
         // TODO: check this test if the range works with non-english letters
         if (key.length === 1 && key >= 'A' && key <= 'Z') {
-          onChar(key)
+          onChar(key);
         }
       }
-    }
-    window.addEventListener('keyup', listener)
+    };
+    window.addEventListener('keyup', listener);
     return () => {
-      window.removeEventListener('keyup', listener)
-    }
-  }, [onEnter, onDelete, onChar])
+      window.removeEventListener('keyup', listener);
+    };
+  }, [onEnter, onDelete, onChar]);
 
   return (
     <div>
@@ -93,5 +93,5 @@ export const Keyboard = ({
         </Key>
       </div>
     </div>
-  )
-}
+  );
+};

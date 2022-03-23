@@ -1,30 +1,30 @@
-import Countdown from 'react-countdown'
-import { StatBar } from '../stats/StatBar'
-import { Histogram } from '../stats/Histogram'
-import { GameStats } from '../../lib/localStorage'
-import { shareStatus } from '../../lib/share'
-import { tomorrow } from '../../lib/words'
-import { BaseModal } from './BaseModal'
+import Countdown from 'react-countdown';
+import { StatBar } from '../stats/StatBar';
+import { Histogram } from '../stats/Histogram';
+import { GameStats } from '../../lib/localStorage';
+import { shareStatus } from '../../lib/share';
+import { tomorrow } from '../../lib/words';
+import { BaseModal } from './BaseModal';
 import {
   STATISTICS_TITLE,
   GUESS_DISTRIBUTION_TEXT,
   NEW_WORD_TEXT,
   SHARE_TEXT,
-} from '../../constants/strings'
+} from '../../constants/strings';
 
 type Props = {
-  isOpen: boolean
-  handleClose: () => void
-  guesses: string[]
-  gameStats: GameStats
-  isGameLost: boolean
-  isGameWon: boolean
-  handleShareToClipboard: () => void
-  isHardMode: boolean
-  isDarkMode: boolean
-  isHighContrastMode: boolean
-  numberOfGuessesMade: number
-}
+  isOpen: boolean;
+  handleClose: () => void;
+  guesses: string[];
+  gameStats: GameStats;
+  isGameLost: boolean;
+  isGameWon: boolean;
+  handleShareToClipboard: () => void;
+  isHardMode: boolean;
+  isDarkMode: boolean;
+  isHighContrastMode: boolean;
+  numberOfGuessesMade: number;
+};
 
 export const StatsModal = ({
   isOpen,
@@ -48,7 +48,7 @@ export const StatsModal = ({
       >
         <StatBar gameStats={gameStats} />
       </BaseModal>
-    )
+    );
   }
   return (
     <BaseModal
@@ -85,7 +85,7 @@ export const StatsModal = ({
                 isDarkMode,
                 isHighContrastMode,
                 handleShareToClipboard
-              )
+              );
             }}
           >
             {SHARE_TEXT}
@@ -93,5 +93,5 @@ export const StatsModal = ({
         </div>
       )}
     </BaseModal>
-  )
-}
+  );
+};
