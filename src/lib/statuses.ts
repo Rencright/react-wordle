@@ -1,6 +1,7 @@
+import { CharStatus } from './shared';
+import { augmentCharObjForVariant, getVariantStatusModifier } from './variants';
 import { solution, unicodeSplit } from './words';
 
-export type CharStatus = 'absent' | 'present' | 'correct';
 
 export const getStatuses = (
   guesses: string[]
@@ -27,12 +28,22 @@ export const getStatuses = (
     });
   });
 
-  return charObj;
+  return augmentCharObjForVariant(charObj, guesses);
 };
 
 export const getGuessStatuses = (guess: string): CharStatus[] => {
-  const splitSolution = unicodeSplit(solution);
-  const splitGuess = unicodeSplit(guess);
+  if (guess === solution) {
+    return ['correct', 'correct', 'correct', 'correct', 'correct'];
+  }
+
+  const modifier = getVariantStatusModifier(guess);
+
+  if (modifier.override) {
+    return modifier.override;
+  }
+
+  const splitSolution = unicodeSplit(modifier.solution || solution);
+  const splitGuess = unicodeSplit(modifier.guess || guess);
 
   const solutionCharsTaken = splitSolution.map((_) => false);
 
@@ -71,5 +82,8 @@ export const getGuessStatuses = (guess: string): CharStatus[] => {
     }
   });
 
+  if (modifier.tweak) {
+    return modifier.tweak(statuses);
+  }
   return statuses;
 };

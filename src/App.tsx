@@ -14,7 +14,6 @@ import {
 } from './constants/strings';
 import {
   MAX_WORD_LENGTH,
-  MAX_CHALLENGES,
   REVEAL_TIME_MS,
   GAME_LOST_INFO_DELAY,
   WELCOME_INFO_MODAL_MS,
@@ -23,6 +22,7 @@ import {
   isWordInWordList,
   isWinningWord,
   solution,
+  maxChallenges,
   findFirstUnusedReveal,
   unicodeLength,
 } from './lib/words';
@@ -74,7 +74,7 @@ function App() {
     if (gameWasWon) {
       setIsGameWon(true);
     }
-    if (loaded.guesses.length === MAX_CHALLENGES && !gameWasWon) {
+    if (loaded.guesses.length === maxChallenges && !gameWasWon) {
       setIsGameLost(true);
       showErrorAlert(CORRECT_WORD_MESSAGE(solution), {
         persist: true,
@@ -164,7 +164,7 @@ function App() {
   const onChar = (value: string) => {
     if (
       unicodeLength(`${currentGuess}${value}`) <= MAX_WORD_LENGTH &&
-      guesses.length < MAX_CHALLENGES &&
+      guesses.length < maxChallenges &&
       !isGameWon
     ) {
       setCurrentGuess(`${currentGuess}${value}`);
@@ -218,7 +218,7 @@ function App() {
 
     if (
       unicodeLength(currentGuess) === MAX_WORD_LENGTH &&
-      guesses.length < MAX_CHALLENGES &&
+      guesses.length < maxChallenges &&
       !isGameWon
     ) {
       setGuesses([...guesses, currentGuess]);
@@ -229,7 +229,7 @@ function App() {
         return setIsGameWon(true);
       }
 
-      if (guesses.length === MAX_CHALLENGES - 1) {
+      if (guesses.length === maxChallenges - 1) {
         setStats(addStatsForCompletedGame(stats, guesses.length + 1));
         setIsGameLost(true);
         showErrorAlert(CORRECT_WORD_MESSAGE(solution), {

@@ -1,4 +1,6 @@
-export const WORDS = [
+import { randomShuffle } from "../lib/random";
+
+const WORDS_UNSHUFFLED = [
   'which',
   'there',
   'their',
@@ -5757,3 +5759,5 @@ export const WORDS = [
   'biffy',
   'pupal',
 ];
+
+export const WORDS = randomShuffle(WORDS_UNSHUFFLED);

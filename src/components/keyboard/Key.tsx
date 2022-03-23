@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import classnames from 'classnames';
-import { CharStatus } from '../../lib/statuses';
+import { CharStatus } from '../../lib/shared';
 import { MAX_WORD_LENGTH, REVEAL_TIME_MS } from '../../constants/settings';
 import { getStoredIsHighContrastMode } from '../../lib/localStorage';
 

@@ -6,6 +6,7 @@ import {
 } from '../constants/strings';
 import { getGuessStatuses } from './statuses';
 import { default as GraphemeSplitter } from 'grapheme-splitter';
+import { generateImpostor, getVariantKey, variantLimits } from './variants';
 
 export const isWordInWordList = (word: string) => {
   return (
@@ -77,19 +78,47 @@ export const localeAwareUpperCase = (text: string) => {
     : text.toUpperCase();
 };
 
+export const getVariantOfDay = (data: {
+  solution: string,
+  solutionIndex: number,
+}): string => {
+  // console.log(solutionIndex);
+  // return 'AMOG1:E';
+  if (data.solutionIndex < 5) {
+    const impostor1 = generateImpostor(data.solution, []);
+    const impostor2 = generateImpostor(data.solution, [impostor1]);
+    return `AMOG2:${impostor1}${impostor2}`;
+  }
+
+  return `AMOG1:${generateImpostor(data.solution, [])}`;
+
+};
+
 export const getWordOfDay = () => {
   // January 1, 2022 Game Epoch
-  const epochMs = new Date(2022, 0).valueOf();
+  const epochMs = new Date(2022, 2, 22).valueOf();
   const now = Date.now();
   const msInDay = 86400000;
   const index = Math.floor((now - epochMs) / msInDay);
   const nextday = (index + 1) * msInDay + epochMs;
+  console.log(index);
+  console.log(WORDS.length);
+  const solution = localeAwareUpperCase(WORDS[index % WORDS.length])
+
+  const variant = getVariantOfDay({
+    solution,
+    solutionIndex: index,
+  });
+
+  console.log(variant);
 
   return {
-    solution: localeAwareUpperCase(WORDS[index % WORDS.length]),
+    solution,
     solutionIndex: index,
     tomorrow: nextday,
+    variant,
+    maxChallenges: variantLimits[getVariantKey(variant)],
   };
 };
 
-export const { solution, solutionIndex, tomorrow } = getWordOfDay();
+export const { solution, solutionIndex, tomorrow, variant, maxChallenges } = getWordOfDay();

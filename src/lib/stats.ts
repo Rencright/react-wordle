@@ -4,6 +4,7 @@ import {
   loadStatsFromLocalStorage,
   saveStatsToLocalStorage,
 } from './localStorage';
+import { maxChallenges } from './words';
 
 // In stats array elements 0-5 are successes in 1-6 trys
 
@@ -16,7 +17,7 @@ export const addStatsForCompletedGame = (
 
   stats.totalGames += 1;
 
-  if (count >= MAX_CHALLENGES) {
+  if (count >= maxChallenges) {
     // A fail situation
     stats.currentStreak = 0;
     stats.gamesFailed += 1;
