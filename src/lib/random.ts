@@ -1,6 +1,6 @@
 import seedrandom from 'seedrandom';
 
-const rand = seedrandom('testamogus3');
+const rand = seedrandom('testamogus6');
 
 export const randBetweenRange = (start: number, stop: number): number => {
   const range = stop - start;

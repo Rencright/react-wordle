@@ -39,6 +39,8 @@ export const Key = ({
         status === 'correct' && !isHighContrast,
       'bg-yellow-500 hover:bg-yellow-600 active:bg-yellow-700 text-white':
         status === 'present' && !isHighContrast,
+      'bg-red-500 hover:bg-red-600 active:bg-red-700 text-white':
+        status === 'secret' && !isHighContrast,
     }
   );
 

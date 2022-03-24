@@ -2,7 +2,7 @@
 import { WORDS } from "../constants/wordlist";
 import { randBetweenRange } from "./random";
 import { CharStatus } from "./shared";
-import { localeAwareLowerCase, localeAwareUpperCase, solution, solutionIndex, variant } from "./words";
+import { localeAwareLowerCase, localeAwareUpperCase, solution, solutionIndex, unicodeSplit, variant } from "./words";
 
 
 export const variantTitles: { [key: string]: string } = {
@@ -51,9 +51,50 @@ export const augmentCharObjForVariant = (charObj: { [key: string]: CharStatus },
         }
       });
       break;
-    // case 'TOBE1':
-    //   charObj['B'] = 'secret';
-    //   charObj['E'] = 'secret';
+    case 'TOBE2':
+      charObj['T'] = 'secret';
+      charObj['O'] = 'secret';
+      charObj['B'] = 'secret';
+      charObj['E'] = 'secret';
+      break;
+    case 'TOBE1':
+      charObj['B'] = 'secret';
+      charObj['E'] = 'secret';
+      break;
+    case 'GREE1':
+      if (charObj[variant[6]] === 'present') {
+        charObj[variant[6]] = 'correct';
+      }
+      break;
+    case 'FOUL1':
+    case 'FOUL2':
+      const swap1 = variant[6];
+      const swap2 = variant[7];
+      let modifiedSolution = solution.replace(swap1, '!').replace(swap2, swap1).replace('!', swap2);
+      if (variantKey === 'FOUL2') {
+        const swap3 = variant[8];
+        const swap4 = variant[9];
+        modifiedSolution = modifiedSolution.replace(swap3, '!').replace(swap4, swap3).replace('!', swap4);
+      }
+      const splitSolution = unicodeSplit(modifiedSolution);
+      charObj = {};
+      guesses.forEach((word) => {
+        unicodeSplit(word).forEach((letter, i) => {
+          if (!splitSolution.includes(letter)) {
+            // make status absent
+            return (charObj[letter] = 'absent');
+          }
+          if (letter === splitSolution[i]) {
+            //make status correct
+            return (charObj[letter] = 'correct');
+          }
+          if (charObj[letter] !== 'correct') {
+            //make status present
+            return (charObj[letter] = 'present');
+          }
+        });
+      });
+      break;
   }
   return charObj;
 };
@@ -70,6 +111,44 @@ export const getVariantStatusModifier = (guess: string): VariantStatusModifier =
       const impostors = [variant[6], variant[7]];
       return {
         tweak: (statuses) => statuses.map((status, i) => (impostors.includes(guess[i]) ? 'present' : status)),
+      };
+    case 'TOBE1':
+      return {
+        tweak: (statuses) => {
+          const ignoreSecret = statuses.every((status, i) => status === 'correct' || ('BE'.includes(guess[i]) && 'BE'.includes(solution[i])));
+          if (ignoreSecret) {
+            return statuses;
+          } else {
+            return statuses.map((status, i) => 'BE'.includes(guess[i]) ? 'secret' : status);
+          }
+        },
+      };
+    case 'TOBE2':
+      return {
+        tweak: (statuses) => {
+          const ignoreSecret = statuses.every((status, i) => status === 'correct' || ('TOBE'.includes(guess[i]) && 'TOBE'.includes(solution[i])));
+          if (ignoreSecret) {
+            return statuses;
+          } else {
+            return statuses.map((status, i) => 'TOBE'.includes(guess[i]) ? 'secret' : status);
+          }
+        },
+      };
+    case 'FOUL1':
+      const swap1 = variant[6];
+      const swap2 = variant[7];
+      return {
+        solution: solution.replace(swap1, '!').replace(swap2, swap1).replace('!', swap2),
+      };
+    case 'FOUL2':
+      const swaps = variant.substr(6);
+      return {
+        solution: solution.replace(swaps[0], '!').replace(swaps[1], swaps[0]).replace('!', swaps[1])
+          .replace(swaps[2], '!').replace(swaps[3], swaps[2]).replace('!', swaps[3]),
+      };
+    case 'GREE1':
+      return {
+        tweak: (statuses) => (statuses.map((status, i) => guess[i] === variant[6] && status === 'present' ? 'correct' : status)),
       };
   }
 

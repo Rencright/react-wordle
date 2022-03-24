@@ -84,6 +84,9 @@ export const getVariantOfDay = (data: {
 }): string => {
   // console.log(solutionIndex);
   // return 'AMOG1:E';
+  if (data.solutionIndex < 4) {
+    return 'TOBE1';
+  }
   if (data.solutionIndex < 5) {
     const impostor1 = generateImpostor(data.solution, []);
     const impostor2 = generateImpostor(data.solution, [impostor1]);

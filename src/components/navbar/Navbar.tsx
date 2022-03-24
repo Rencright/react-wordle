@@ -4,6 +4,8 @@ import {
   InformationCircleIcon,
 } from '@heroicons/react/outline';
 import { GAME_TITLE } from '../../constants/strings';
+import { variantTitles } from '../../lib/variants';
+import { variant } from '../../lib/words';
 
 type Props = {
   setIsInfoModalOpen: (value: boolean) => void;
@@ -16,6 +18,7 @@ export const Navbar = ({
   setIsStatsModalOpen,
   setIsSettingsModalOpen,
 }: Props) => {
+  const title = `${GAME_TITLE} - ${variantTitles[variant]}`;
   return (
     <div className="navbar">
       <div className="navbar-content px-5">
@@ -23,7 +26,7 @@ export const Navbar = ({
           className="h-6 w-6 mr-2 cursor-pointer dark:stroke-white"
           onClick={() => setIsInfoModalOpen(true)}
         />
-        <p className="text-xl ml-2.5 font-bold dark:text-white">{GAME_TITLE}</p>
+        <p className="text-xl ml-2.5 font-bold dark:text-white">{title}</p>
         <div className="right-icons">
           <ChartBarIcon
             className="h-6 w-6 mr-3 cursor-pointer dark:stroke-white"
