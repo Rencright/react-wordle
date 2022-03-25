@@ -112,7 +112,7 @@ const getVariantKeyOfDay = (solutionIndex: number): VariantKey => {
       console.error('ERROR - integers have stopped working!');
       return 'GREE1';
   }
-}
+};
 
 export const getVariantOfDay = (data: {
   solution: string;

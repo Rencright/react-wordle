@@ -1,5 +1,10 @@
 import { getGuessStatuses } from './statuses';
-import { maxChallenges, solutionIndex, unicodeSplit, variantTitle } from './words';
+import {
+  maxChallenges,
+  solutionIndex,
+  unicodeSplit,
+  variantTitle,
+} from './words';
 import { GAME_TITLE } from '../constants/strings';
 import { UAParser } from 'ua-parser-js';
 
