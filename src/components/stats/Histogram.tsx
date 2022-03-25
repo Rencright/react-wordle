@@ -4,10 +4,15 @@ import { Progress } from './Progress';
 type Props = {
   gameStats: GameTypeStats;
   numberOfGuessesMade: number;
+  maxGuesses: number;
 };
 
-export const Histogram = ({ gameStats, numberOfGuessesMade }: Props) => {
-  const winDistribution = gameStats.winDistribution;
+export const Histogram = ({
+  gameStats,
+  numberOfGuessesMade,
+  maxGuesses,
+}: Props) => {
+  const winDistribution = gameStats.winDistribution.slice(0, maxGuesses);
   const maxValue = Math.max(...winDistribution);
 
   return (

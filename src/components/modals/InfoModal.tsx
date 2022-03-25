@@ -1,7 +1,7 @@
 import React from 'react';
 import { CharStatus } from '../../lib/shared';
 import { getVariantKey, getVariantTitle, VariantKey } from '../../lib/variants';
-import { variant } from '../../lib/words';
+import { maxChallenges, variant } from '../../lib/words';
 import { Cell } from '../grid/Cell';
 import { BaseModal } from './BaseModal';
 
@@ -46,9 +46,7 @@ type Info = {
 const modalContentForVariant: Record<VariantKey, Info> = {
   AMOG1: {
     description: [
-      'This is Wordle with a twist!',
       "Today's variation: one letter is an impostor. It is not in the word, but appears yellow (blue in high-contrast). More common letters are more likely to be impostors.",
-      'You have 7 guesses.',
     ],
     examples: [
       {
@@ -61,9 +59,7 @@ const modalContentForVariant: Record<VariantKey, Info> = {
   },
   AMOG2: {
     description: [
-      'This is Wordle with a twist!',
       "Today's variation: two letters are impostors. They are not in the word, but appear yellow (blue in high-contrast). More common letters are more likely to be impostors.",
-      'You have 8 guesses.',
     ],
     examples: [
       {
@@ -76,9 +72,7 @@ const modalContentForVariant: Record<VariantKey, Info> = {
   },
   TOBE1: {
     description: [
-      'This is Wordle with a twist!',
       "Today's variation: the letters B and E are red. They will only change colour if you place all other letters correctly.",
-      'You have 7 guesses.',
     ],
     examples: [
       {
@@ -91,9 +85,7 @@ const modalContentForVariant: Record<VariantKey, Info> = {
   },
   TOBE2: {
     description: [
-      'This is Wordle with a twist!',
       "Today's variation: the letters T, O, B, and E are red. They will only change colour if you place all other letters correctly.",
-      'You have 8 guesses.',
     ],
     examples: [
       {
@@ -112,9 +104,7 @@ const modalContentForVariant: Record<VariantKey, Info> = {
   },
   GREE1: {
     description: [
-      'This is Wordle with a twist!',
       "Today's variation: one letter in the word is happy. It always thinks it's in the right spot - it will appear green (or orange - right letter in right spot) whenever it would appear yellow (or blue - right letter in wrong spot).",
-      'You have 7 guesses.',
     ],
     examples: [
       {
@@ -139,9 +129,8 @@ const modalContentForVariant: Record<VariantKey, Info> = {
   },
   FOUL1: {
     description: [
-      'This is Wordle with a twist!',
       "Today's variation: two vowels are swapped - each one appears the colour that the other should be. Vowels in the word are more likely to be swapped, as are more common vowels.",
-      'You have 7 guesses.',
+      "Rest assured that you'll never see an all-green word that's not the correct answer.",
     ],
     examples: [
       {
@@ -154,9 +143,8 @@ const modalContentForVariant: Record<VariantKey, Info> = {
   },
   FOUL2: {
     description: [
-      'This is Wordle with a twist!',
       "Today's variation: two pairs vowels are swapped - each vowel in a pair appears the colour that the other should be. Vowels in the word are more likely to be swapped, as are more common vowels.",
-      'You have 8 guesses.',
+      "Rest assured that you'll never see an all-green word that's not the correct answer.",
     ],
     examples: [
       {
@@ -169,9 +157,7 @@ const modalContentForVariant: Record<VariantKey, Info> = {
   },
   BOND1: {
     description: [
-      'This is Wordle with a twist!',
       "Today's variation: two adjacent letters are married - their colour is determined not by which spot they're in, but whether or not the other letter is next to it on the correct side. If the letter appears multiple times in a word, only one instance of the letter is married.",
-      'You have 7 guesses.',
     ],
     examples: [
       {
@@ -190,9 +176,7 @@ const modalContentForVariant: Record<VariantKey, Info> = {
   },
   MINE1: {
     description: [
-      'This is Wordle with a twist!',
       "Today's variation: one letter that's not in the word is classified - if you use it in a word, you get no information from that word.",
-      'You have 7 guesses.',
     ],
     examples: [
       {
@@ -205,10 +189,10 @@ const modalContentForVariant: Record<VariantKey, Info> = {
         guess: 'BLING',
         statuses: ['absent', 'present', 'correct', 'absent', 'absent'],
         explanation:
-          'B, N, and G are not in the word, but they\'re not the classified letter, so you can safely use them in other guesses.',
+          "B, N, and G are not in the word, but they're not the classified letter, so you can safely use them in other guesses.",
       },
     ],
-  }
+  },
 };
 
 export const InfoModal = ({ isOpen, handleClose }: Props) => {
@@ -220,11 +204,17 @@ export const InfoModal = ({ isOpen, handleClose }: Props) => {
       isOpen={isOpen}
       handleClose={handleClose}
     >
+      <p className="text-sm text-gray-500 dark:text-gray-300">
+        {'This is Wordle with a twist!'}
+      </p>
       {modalContent.description.map((line) => (
         <p key={line} className="text-sm text-gray-500 dark:text-gray-300">
           {line}
         </p>
       ))}
+      <p className="text-sm text-gray-500 dark:text-gray-300">
+        {`You have ${maxChallenges} guesses.`}
+      </p>
 
       {modalContent.examples.map((example) => (
         <React.Fragment key={example.guess}>

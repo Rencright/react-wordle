@@ -3,7 +3,7 @@ import { StatBar } from '../stats/StatBar';
 import { Histogram } from '../stats/Histogram';
 import { GameStats } from '../../lib/localStorage';
 import { shareStatus } from '../../lib/share';
-import { tomorrow, variantKey } from '../../lib/words';
+import { maxChallenges, tomorrow, variantKey } from '../../lib/words';
 import { BaseModal } from './BaseModal';
 import {
   STATISTICS_TITLE,
@@ -98,6 +98,7 @@ export const StatsModal = ({
       <Histogram
         gameStats={gameStats.statsByVariant[variantKey]}
         numberOfGuessesMade={numberOfGuessesMade}
+        maxGuesses={maxChallenges}
       />
       {(isGameLost || isGameWon) && (
         <div className="mt-5 sm:mt-6 columns-2 dark:text-white">

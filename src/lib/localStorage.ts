@@ -1,3 +1,6 @@
+import { MAX_CHALLENGES } from '../constants/settings';
+import { VariantKey, variantLimits } from './variants';
+
 const gameStateKey = 'gameState';
 const highContrastKey = 'highContrast';
 
@@ -26,6 +29,22 @@ export interface GameTypeStats {
   successRate: number;
 }
 
+const updateDistributionLength = (stats: GameStats) => {
+  while (stats.winDistribution.length < MAX_CHALLENGES) {
+    stats.winDistribution.push(0);
+  }
+  (Object.keys(stats.statsByVariant) as VariantKey[]).forEach(
+    (variantKey: VariantKey) => {
+      while (
+        stats.statsByVariant[variantKey].winDistribution.length <
+        variantLimits[variantKey]
+      ) {
+        stats.statsByVariant[variantKey].winDistribution.push(0);
+      }
+    }
+  );
+};
+
 export interface GameStats extends GameTypeStats {
   statsByVariant: {
     [key: string]: GameTypeStats;
@@ -38,7 +57,11 @@ export const saveStatsToLocalStorage = (gameStats: GameStats) => {
 
 export const loadStatsFromLocalStorage = () => {
   const stats = localStorage.getItem(gameStatKey);
-  return stats ? (JSON.parse(stats) as GameStats) : null;
+  const gameStats = stats ? (JSON.parse(stats) as GameStats) : null;
+  if (gameStats) {
+    updateDistributionLength(gameStats);
+  }
+  return gameStats;
 };
 
 export const setStoredIsHighContrastMode = (isHighContrast: boolean) => {
