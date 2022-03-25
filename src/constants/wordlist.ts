@@ -1,4 +1,4 @@
-import { randomShuffle } from "../lib/random";
+import { randomShuffle } from '../lib/random';
 
 const WORDS_UNSHUFFLED = [
   'which',

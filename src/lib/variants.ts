@@ -1,11 +1,26 @@
 // import { solutionIndex } from "./words";
-import { WORDS } from "../constants/wordlist";
-import { randBetweenRange } from "./random";
-import { CharStatus } from "./shared";
-import { localeAwareLowerCase, localeAwareUpperCase, solution, solutionIndex, unicodeSplit, variant } from "./words";
+import { VALID_GUESSES } from '../constants/validGuesses';
+import { WORDS } from '../constants/wordlist';
+import { randBetweenRange } from './random';
+import { CharStatus } from './shared';
+import {
+  localeAwareLowerCase,
+  localeAwareUpperCase,
+  solution,
+  unicodeSplit,
+  variant,
+} from './words';
 
+export type VariantKey =
+  | 'FOUL1'
+  | 'FOUL2'
+  | 'TOBE1'
+  | 'TOBE2'
+  | 'AMOG1'
+  | 'AMOG2'
+  | 'GREE1';
 
-export const variantTitles: { [key: string]: string } = {
+export const variantTitles: Record<VariantKey, string> = {
   FOUL1: 'Fair is Foul',
   TOBE1: 'To Be or Not to Be',
   AMOG1: 'One Impostor',
@@ -16,7 +31,7 @@ export const variantTitles: { [key: string]: string } = {
   AMOG2: 'Two Impostors',
 };
 
-export const variantLimits: { [key: string]: number } = {
+export const variantLimits: Record<VariantKey, number> = {
   FOUL1: 7,
   TOBE1: 7,
   AMOG1: 7,
@@ -34,8 +49,20 @@ export type VariantStatusModifier = {
   tweak?: (realValues: CharStatus[]) => CharStatus[];
 };
 
-export const augmentCharObjForVariant = (charObj: { [key: string]: CharStatus }, guesses: string[]) => {
-  console.log(solution);
+export type VariantKeyboardStatusModifier = {
+  guesses?: string[];
+  solution?: string;
+  override?: { [key: string]: CharStatus };
+  tweak?: (charStatus: { [key: string]: CharStatus }) => {
+    [key: string]: CharStatus;
+  };
+};
+
+const augmentCharObjForVariant = (
+  charObj: { [key: string]: CharStatus },
+  guesses: string[]
+) => {
+  // console.log(solution);
   const variantKey = getVariantKey(variant);
   switch (variantKey) {
     case 'AMOG1':
@@ -66,71 +93,92 @@ export const augmentCharObjForVariant = (charObj: { [key: string]: CharStatus },
         charObj[variant[6]] = 'correct';
       }
       break;
-    case 'FOUL1':
-    case 'FOUL2':
-      const swap1 = variant[6];
-      const swap2 = variant[7];
-      let modifiedSolution = solution.replace(swap1, '!').replace(swap2, swap1).replace('!', swap2);
-      if (variantKey === 'FOUL2') {
-        const swap3 = variant[8];
-        const swap4 = variant[9];
-        modifiedSolution = modifiedSolution.replace(swap3, '!').replace(swap4, swap3).replace('!', swap4);
-      }
-      const splitSolution = unicodeSplit(modifiedSolution);
-      charObj = {};
-      guesses.forEach((word) => {
-        unicodeSplit(word).forEach((letter, i) => {
-          if (!splitSolution.includes(letter)) {
-            // make status absent
-            return (charObj[letter] = 'absent');
-          }
-          if (letter === splitSolution[i]) {
-            //make status correct
-            return (charObj[letter] = 'correct');
-          }
-          if (charObj[letter] !== 'correct') {
-            //make status present
-            return (charObj[letter] = 'present');
-          }
-        });
-      });
-      break;
   }
   return charObj;
 };
 
-export const getVariantStatusModifier = (guess: string): VariantStatusModifier => {
+export const getVariantKeyboardStatusModifier = (
+  guesses: string[]
+): VariantKeyboardStatusModifier => {
+  const variantKey = getVariantKey(variant);
+  switch (variantKey) {
+    case 'FOUL1':
+      const swap1 = variant[6];
+      const swap2 = variant[7];
+      return {
+        solution: solution
+          .replace(swap1, '!')
+          .replace(swap2, swap1)
+          .replace('!', swap2),
+      };
+    case 'FOUL2':
+      const swaps = variant.substr(6);
+      return {
+        solution: solution
+          .replace(swaps[0], '!')
+          .replace(swaps[1], swaps[0])
+          .replace('!', swaps[1])
+          .replace(swaps[2], '!')
+          .replace(swaps[3], swaps[2])
+          .replace('!', swaps[3]),
+      };
+    default:
+      return { tweak: (charObj) => augmentCharObjForVariant(charObj, guesses) };
+  }
+};
+
+export const getVariantStatusModifier = (
+  guess: string
+): VariantStatusModifier => {
   const variantKey = getVariantKey(variant);
   switch (variantKey) {
     case 'AMOG1':
       const impostor = variant[6];
       return {
-        tweak: (statuses) => statuses.map((status, i) => (guess[i] === impostor ? 'present' : status)),
+        tweak: (statuses) =>
+          statuses.map((status, i) =>
+            guess[i] === impostor ? 'present' : status
+          ),
       };
     case 'AMOG2':
       const impostors = [variant[6], variant[7]];
       return {
-        tweak: (statuses) => statuses.map((status, i) => (impostors.includes(guess[i]) ? 'present' : status)),
+        tweak: (statuses) =>
+          statuses.map((status, i) =>
+            impostors.includes(guess[i]) ? 'present' : status
+          ),
       };
     case 'TOBE1':
       return {
         tweak: (statuses) => {
-          const ignoreSecret = statuses.every((status, i) => status === 'correct' || ('BE'.includes(guess[i]) && 'BE'.includes(solution[i])));
+          const ignoreSecret = statuses.every(
+            (status, i) =>
+              status === 'correct' ||
+              ('BE'.includes(guess[i]) && 'BE'.includes(solution[i]))
+          );
           if (ignoreSecret) {
             return statuses;
           } else {
-            return statuses.map((status, i) => 'BE'.includes(guess[i]) ? 'secret' : status);
+            return statuses.map((status, i) =>
+              'BE'.includes(guess[i]) ? 'secret' : status
+            );
           }
         },
       };
     case 'TOBE2':
       return {
         tweak: (statuses) => {
-          const ignoreSecret = statuses.every((status, i) => status === 'correct' || ('TOBE'.includes(guess[i]) && 'TOBE'.includes(solution[i])));
+          const ignoreSecret = statuses.every(
+            (status, i) =>
+              status === 'correct' ||
+              ('TOBE'.includes(guess[i]) && 'TOBE'.includes(solution[i]))
+          );
           if (ignoreSecret) {
             return statuses;
           } else {
-            return statuses.map((status, i) => 'TOBE'.includes(guess[i]) ? 'secret' : status);
+            return statuses.map((status, i) =>
+              'TOBE'.includes(guess[i]) ? 'secret' : status
+            );
           }
         },
       };
@@ -138,25 +186,36 @@ export const getVariantStatusModifier = (guess: string): VariantStatusModifier =
       const swap1 = variant[6];
       const swap2 = variant[7];
       return {
-        solution: solution.replace(swap1, '!').replace(swap2, swap1).replace('!', swap2),
+        solution: solution
+          .replace(swap1, '!')
+          .replace(swap2, swap1)
+          .replace('!', swap2),
       };
     case 'FOUL2':
       const swaps = variant.substr(6);
       return {
-        solution: solution.replace(swaps[0], '!').replace(swaps[1], swaps[0]).replace('!', swaps[1])
-          .replace(swaps[2], '!').replace(swaps[3], swaps[2]).replace('!', swaps[3]),
+        solution: solution
+          .replace(swaps[0], '!')
+          .replace(swaps[1], swaps[0])
+          .replace('!', swaps[1])
+          .replace(swaps[2], '!')
+          .replace(swaps[3], swaps[2])
+          .replace('!', swaps[3]),
       };
     case 'GREE1':
       return {
-        tweak: (statuses) => (statuses.map((status, i) => guess[i] === variant[6] && status === 'present' ? 'correct' : status)),
+        tweak: (statuses) =>
+          statuses.map((status, i) =>
+            guess[i] === variant[6] && status === 'present' ? 'correct' : status
+          ),
       };
   }
 
   return {};
-}
+};
 
-export const getVariantKey = (variantSpecifier: string): string =>
-  variantSpecifier.slice(0, 5);
+export const getVariantKey = (variantSpecifier: string): VariantKey =>
+  variantSpecifier.substr(0, 5) as VariantKey;
 
 export const getVariantTitle = (variantSpecifier: string): string => {
   return variantTitles[getVariantKey(variantSpecifier)];
@@ -170,7 +229,11 @@ export const generateImpostor = (solution: string, bannedLetters: string[]) => {
     impostor = WORDS[randBetweenRange(0, WORDS.length)][randBetweenRange(0, 5)];
     if (solutionLower.includes(impostor) || bannedLetters.includes(impostor)) {
       if (tries === 20) {
-        impostor = ['E', 'A', 'I', 'O', 'U', 'Y'].find((letter) => !solutionLower.includes(letter) && !bannedLetters.includes(letter)) || ';';
+        impostor =
+          ['E', 'A', 'I', 'O', 'U', 'Y'].find(
+            (letter) =>
+              !solutionLower.includes(letter) && !bannedLetters.includes(letter)
+          ) || ';';
       } else {
         impostor = null;
         tries += 1;
@@ -178,14 +241,146 @@ export const generateImpostor = (solution: string, bannedLetters: string[]) => {
     }
   }
   return localeAwareUpperCase(impostor);
-}
-
-export const getVariantOfDay = (): string => {
-  console.log(solutionIndex);
-  return 'AMOG1:E';
-
-  // return `AMOG1:${generateImpostor([])}`;
-
 };
+
+const generateFoulPairs = (solution: string, numPairs: number): string => {
+  const solutionLower = localeAwareLowerCase(solution);
+  const solutionVowels = unicodeSplit(solutionLower).filter((letter) =>
+    'aeiou'.includes(letter)
+  );
+  let includedLetters: string[] = [];
+  let numResets = 0;
+  for (let i = 0; i < numPairs; ++i) {
+    let x: string | null = null;
+    let y: string | null = null;
+    let tries = 0;
+    while (x === null) {
+      if (tries >= 10) {
+        const skipLetters = includedLetters;
+        let pair = [
+          'AE',
+          'EI',
+          'EO',
+          'EU',
+          'AI',
+          'AO',
+          'AU',
+          'IO',
+          'IU',
+          'OU',
+        ].find((letters) => {
+          const a = letters[0];
+          const b = letters[1];
+          if (
+            skipLetters.includes(letters[0]) ||
+            skipLetters.includes(letters[1])
+          ) {
+            return false;
+          }
+          const pseudoSolution = solution
+            .replace(a, '!')
+            .replace(b, a)
+            .replace('!', b);
+          return (
+            pseudoSolution === solution ||
+            !VALID_GUESSES.includes(pseudoSolution)
+          );
+        });
+        if (pair) {
+          x = pair[0];
+          y = pair[1];
+        } else {
+          x = 'RESET';
+          y = null;
+        }
+      }
+      tries += 1;
+      for (let j = 0; j < 2; ++j) {
+        let vowel: string;
+        if (randBetweenRange(0, 2) === 0) {
+          vowel = solutionVowels[randBetweenRange(0, solutionVowels.length)];
+        } else {
+          const wordWithVowel = WORDS[randBetweenRange(0, WORDS.length)];
+          const vowels = unicodeSplit(wordWithVowel).filter((letter) =>
+            'aeiou'.includes(letter)
+          );
+          vowel = vowels[randBetweenRange(0, solutionVowels.length)];
+        }
+        if (includedLetters.includes(vowel)) {
+          break;
+        }
+        if (j === 0) {
+          x = vowel;
+        } else {
+          y = vowel;
+          if (x === y) {
+            x = null;
+          } else {
+            const pseudoSolution = solution
+              .replace(x as string, '!')
+              .replace(y, x as string)
+              .replace('!', y);
+            if (
+              pseudoSolution !== solution &&
+              VALID_GUESSES.includes(pseudoSolution)
+            ) {
+              x = null;
+              y = null;
+            }
+          }
+        }
+      }
+    }
+    if (x !== null && y !== null) {
+      includedLetters.push(x, y);
+    } else if (includedLetters.length > 0 && numResets < 5) {
+      includedLetters = [];
+      numResets += 1;
+    } else {
+      return '';
+    }
+  }
+  return localeAwareUpperCase(includedLetters.join(''));
+};
+
+export const generateVariant = (solution: string, key: VariantKey): string => {
+  let foulLetters: string;
+  switch (key) {
+    case 'TOBE1':
+    case 'TOBE2':
+      return key;
+    case 'AMOG1':
+      return `AMOG1:${generateImpostor(solution, [])}`;
+    case 'AMOG2':
+      const impostor1 = generateImpostor(solution, []);
+      const impostor2 = generateImpostor(solution, [impostor1]);
+      return `AMOG1:${impostor1}${impostor2}`;
+    case 'FOUL1':
+      foulLetters = generateFoulPairs(solution, 1);
+      if (foulLetters.length === 0) {
+        console.error('FAILED TO GENERATE FOUL PAIR!');
+        return 'TOBE1';
+      }
+      return `FOUL1:${foulLetters}`;
+    case 'FOUL2':
+      foulLetters = generateFoulPairs(solution, 2);
+      if (foulLetters.length === 0) {
+        console.error('FAILED TO GENERATE FOUL PAIRS!');
+        return 'TOBE2';
+      }
+      return `FOUL2:${foulLetters}`;
+    case 'GREE1':
+      let greenLetter = solution[randBetweenRange(0, 5)];
+      return `GREE1:${greenLetter}`;
+  }
+};
+
+// export const getVariantOfDay = (): string => {
+//   console.log(solutionIndex);
+//   return 'AMOG1:E';
+
+//   // return `AMOG1:${generateImpostor([])}`;
+
+// };
 
 // export const variant = getVariantOfDay();

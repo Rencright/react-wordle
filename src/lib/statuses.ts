@@ -1,15 +1,22 @@
 import { CharStatus } from './shared';
-import { augmentCharObjForVariant, getVariantStatusModifier } from './variants';
+import {
+  getVariantKeyboardStatusModifier,
+  getVariantStatusModifier,
+} from './variants';
 import { solution, unicodeSplit } from './words';
-
 
 export const getStatuses = (
   guesses: string[]
 ): { [key: string]: CharStatus } => {
-  const charObj: { [key: string]: CharStatus } = {};
-  const splitSolution = unicodeSplit(solution);
+  const modifier = getVariantKeyboardStatusModifier(guesses);
+  if (modifier.override) {
+    return modifier.override;
+  }
 
-  guesses.forEach((word) => {
+  const charObj: { [key: string]: CharStatus } = {};
+  const splitSolution = unicodeSplit(modifier.solution || solution);
+
+  (modifier.guesses || guesses).forEach((word) => {
     unicodeSplit(word).forEach((letter, i) => {
       if (!splitSolution.includes(letter)) {
         // make status absent
@@ -28,7 +35,11 @@ export const getStatuses = (
     });
   });
 
-  return augmentCharObjForVariant(charObj, guesses);
+  if (modifier.tweak) {
+    return modifier.tweak(charObj);
+  } else {
+    return charObj;
+  }
 };
 
 export const getGuessStatuses = (guess: string): CharStatus[] => {

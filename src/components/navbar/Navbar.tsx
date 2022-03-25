@@ -4,7 +4,7 @@ import {
   InformationCircleIcon,
 } from '@heroicons/react/outline';
 import { GAME_TITLE } from '../../constants/strings';
-import { variantTitles } from '../../lib/variants';
+import { getVariantTitle } from '../../lib/variants';
 import { variant } from '../../lib/words';
 
 type Props = {
@@ -18,7 +18,7 @@ export const Navbar = ({
   setIsStatsModalOpen,
   setIsSettingsModalOpen,
 }: Props) => {
-  const title = `${GAME_TITLE} - ${variantTitles[variant]}`;
+  const title = `${GAME_TITLE} - ${getVariantTitle(variant)}`;
   return (
     <div className="navbar">
       <div className="navbar-content px-5">
