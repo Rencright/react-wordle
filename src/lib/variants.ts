@@ -176,6 +176,7 @@ export const getVariantStatusModifier = (
   guess: string
 ): VariantStatusModifier => {
   const variantKey = getVariantKey(variant);
+  let impostors: string[];
   switch (variantKey) {
     case 'AMOG1':
       const impostor = variant[6];
@@ -186,7 +187,15 @@ export const getVariantStatusModifier = (
           ),
       };
     case 'AMOG2':
-      const impostors = [variant[6], variant[7]];
+      impostors = [variant[6], variant[7]];
+      return {
+        tweak: (statuses) =>
+          statuses.map((status, i) =>
+            impostors.includes(guess[i]) ? 'present' : status
+          ),
+      };
+    case 'AMOG3':
+      impostors = [variant[6], variant[7], variant[8]];
       return {
         tweak: (statuses) =>
           statuses.map((status, i) =>
@@ -329,8 +338,6 @@ export const getVariantStatusModifier = (
           ),
       };
   }
-
-  return {};
 };
 
 export const getVariantKey = (variantSpecifier: string): VariantKey =>
