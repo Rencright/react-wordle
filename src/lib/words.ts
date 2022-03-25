@@ -89,6 +89,7 @@ export const getVariantOfDay = (data: {
 }): string => {
   // console.log(solutionIndex);
   // return 'AMOG1:E';
+
   console.log(data.solutionIndex);
   let variantKey: VariantKey;
   switch (data.solutionIndex % 7) {
@@ -105,7 +106,7 @@ export const getVariantOfDay = (data: {
       variantKey = 'GREE1';
       break;
     case 4:
-      variantKey = 'AMOG2';
+      variantKey = 'BOND1';
       break;
     case 5:
       variantKey = 'TOBE2';
@@ -117,6 +118,10 @@ export const getVariantOfDay = (data: {
       console.error('ERROR - integers have stopped working!');
       variantKey = 'GREE1';
   }
+
+  // if (true) {
+  //   variantKey = 'BOND1';
+  // }
 
   return generateVariant(data.solution, variantKey);
 

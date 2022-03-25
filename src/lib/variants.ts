@@ -18,13 +18,15 @@ export type VariantKey =
   | 'TOBE2'
   | 'AMOG1'
   | 'AMOG2'
-  | 'GREE1';
+  | 'GREE1'
+  | 'BOND1';
 
 export const variantTitles: Record<VariantKey, string> = {
   FOUL1: 'Fair is Foul',
   TOBE1: 'To Be or Not to Be',
   AMOG1: 'One Impostor',
   GREE1: 'Being Green',
+  BOND1: 'Sweet Sorrow',
 
   FOUL2: 'Fair is Foul II',
   TOBE2: 'To Be or Not to Be II',
@@ -36,6 +38,7 @@ export const variantLimits: Record<VariantKey, number> = {
   TOBE1: 7,
   AMOG1: 7,
   GREE1: 7,
+  BOND1: 7,
 
   FOUL2: 8,
   TOBE2: 8,
@@ -93,6 +96,12 @@ const augmentCharObjForVariant = (
         charObj[variant[6]] = 'correct';
       }
       break;
+    case 'BOND1':
+      Object.keys(charObj).forEach((char) => {
+        if (charObj[char] === 'correct') {
+          charObj[char] = 'present';
+        }
+      });
   }
   return charObj;
 };
@@ -209,6 +218,37 @@ export const getVariantStatusModifier = (
             guess[i] === variant[6] && status === 'present' ? 'correct' : status
           ),
       };
+    case 'BOND1':
+      const bondIndex = parseInt(variant[6]);
+      return {
+        tweak: (statuses) =>
+          statuses.map((status, i) => {
+            // Make sure that this is the correct instance of the letter.
+            let countDiscrepancy = 0;
+            if (guess[i] === solution[bondIndex - 1] || guess[i] === solution[bondIndex]) {
+              const targetIndex = (guess[i] === solution[bondIndex]) ? bondIndex : (bondIndex - 1);
+              const guessCount = unicodeSplit(guess.substr(0, i)).filter((l) => l === guess[i]).length;
+              const solutionCount =  unicodeSplit(solution.substr(0, targetIndex)).filter((l) => l === guess[i]).length;
+              countDiscrepancy = guessCount - solutionCount;
+            }
+
+            if (guess[i] === solution[bondIndex - 1] && countDiscrepancy === 0) {
+              if (i < 4 && guess[i + 1] === solution[bondIndex]) {
+                return 'correct';
+              } else {
+                return 'present';
+              }
+            } else if (guess[i] === solution[bondIndex]) {
+              if (i > 0 && guess[i - 1] === solution[bondIndex - 1]) {
+                return 'correct';
+              } else {
+                return 'present';
+              }
+            } else {
+              return status;
+            }
+          }),
+      }
   }
 
   return {};
@@ -372,6 +412,9 @@ export const generateVariant = (solution: string, key: VariantKey): string => {
     case 'GREE1':
       let greenLetter = solution[randBetweenRange(0, 5)];
       return `GREE1:${greenLetter}`;
+    case 'BOND1':
+      let n = randBetweenRange(1, 5);
+      return `BOND1:${n}`;
   }
 };
 
