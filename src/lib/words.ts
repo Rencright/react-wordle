@@ -91,7 +91,7 @@ const getVariantKeyOfDay = (solutionIndex: number): VariantKey => {
     return overrideVariant as VariantKey;
   }
 
-  switch (solutionIndex % 8) {
+  switch (solutionIndex % 9) {
     case 0:
       return 'TOBE1';
     case 1:
@@ -108,6 +108,8 @@ const getVariantKeyOfDay = (solutionIndex: number): VariantKey => {
       return 'FOUL2';
     case 7:
       return 'AMOG2';
+    case 8:
+      return 'MINE1';
     default:
       console.error('ERROR - integers have stopped working!');
       return 'GREE1';

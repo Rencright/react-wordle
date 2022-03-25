@@ -188,6 +188,27 @@ const modalContentForVariant: Record<VariantKey, Info> = {
       },
     ],
   },
+  MINE1: {
+    description: [
+      'This is Wordle with a twist!',
+      "Today's variation: one letter that's not in the word is classified - if you use it in a word, you get no information from that word.",
+      'You have 7 guesses.',
+    ],
+    examples: [
+      {
+        guess: 'FRANK',
+        statuses: ['secret', 'secret', 'secret', 'secret', 'secret'],
+        explanation:
+          'One of the letters F, R, A, N, or K is the classified letter, and thus not in the word. That is all you learn from this guess.',
+      },
+      {
+        guess: 'BLING',
+        statuses: ['absent', 'present', 'correct', 'absent', 'absent'],
+        explanation:
+          'B, N, and G are not in the word, but they\'re not the classified letter, so you can safely use them in other guesses.',
+      },
+    ],
+  }
 };
 
 export const InfoModal = ({ isOpen, handleClose }: Props) => {

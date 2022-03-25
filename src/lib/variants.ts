@@ -20,7 +20,8 @@ export type VariantKey =
   | 'AMOG1'
   | 'AMOG2'
   | 'GREE1'
-  | 'BOND1';
+  | 'BOND1'
+  | 'MINE1';
 
 export const variantTitles: Record<VariantKey, string> = {
   FOUL1: 'Fair is Foul',
@@ -28,6 +29,7 @@ export const variantTitles: Record<VariantKey, string> = {
   AMOG1: 'One Impostor',
   GREE1: 'The Optimist',
   BOND1: 'Sweet Sorrow',
+  MINE1: '[REDACTED]',
 
   FOUL2: 'Fair is Foul II',
   TOBE2: 'To Be or Not to Be II',
@@ -40,6 +42,7 @@ export const variantLimits: Record<VariantKey, number> = {
   AMOG1: 7,
   GREE1: 7,
   BOND1: 7,
+  MINE1: 7,
 
   FOUL2: 8,
   TOBE2: 8,
@@ -127,6 +130,10 @@ export const getVariantKeyboardStatusModifier = (
           .replaceAll(swaps[2], '!')
           .replaceAll(swaps[3], swaps[2])
           .replaceAll('!', swaps[3]),
+      };
+    case 'MINE1':
+      return {
+        guesses: guesses.filter((guess) => !guess.includes(variant[6])),
       };
     default:
       return { tweak: (charObj) => augmentCharObjForVariant(charObj) };
@@ -257,6 +264,14 @@ export const getVariantStatusModifier = (
             }
           }),
       };
+    case 'MINE1':
+      if (guess.includes(variant[6])) {
+        return {
+          override: ['secret', 'secret', 'secret', 'secret', 'secret'],
+        };
+      } else {
+        return {};
+      }
   }
 
   return {};
@@ -486,15 +501,7 @@ export const generateVariant = (solution: string, key: VariantKey): string => {
     case 'BOND1':
       let n = randBetweenRange(1, 5);
       return `BOND1:${n}`;
+    case 'MINE1':
+      return `MINE1:${generateImpostor(solution, [])}`;
   }
 };
-
-// export const getVariantOfDay = (): string => {
-//   console.log(solutionIndex);
-//   return 'AMOG1:E';
-
-//   // return `AMOG1:${generateImpostor([])}`;
-
-// };
-
-// export const variant = getVariantOfDay();
