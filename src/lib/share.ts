@@ -1,9 +1,7 @@
 import { getGuessStatuses } from './statuses';
-import { maxChallenges, solutionIndex, unicodeSplit, variant } from './words';
+import { maxChallenges, solutionIndex, unicodeSplit, variantTitle } from './words';
 import { GAME_TITLE } from '../constants/strings';
-import { MAX_CHALLENGES } from '../constants/settings';
 import { UAParser } from 'ua-parser-js';
-import { variantLimits } from './variants';
 
 const webShareApiDeviceTypes: string[] = ['mobile', 'smarttv', 'wearable'];
 const parser = new UAParser();
@@ -18,11 +16,12 @@ export const shareStatus = (
   isHighContrastMode: boolean,
   handleShareToClipboard: () => void
 ) => {
-  const textToShare =
-    `${GAME_TITLE} ${solutionIndex} ${
-      lost ? 'X' : guesses.length
-    }/${maxChallenges}${isHardMode ? '*' : ''}\n\n` +
-    generateEmojiGrid(guesses, getEmojiTiles(isDarkMode, isHighContrastMode));
+  const textToShare = `${GAME_TITLE} ${solutionIndex} (${variantTitle}) ${
+    lost ? 'X' : guesses.length
+  }/${maxChallenges}${isHardMode ? '*' : ''}\n\n${generateEmojiGrid(
+    guesses,
+    getEmojiTiles(isDarkMode, isHighContrastMode)
+  )}\n\n${process.env.REACT_APP_SHARE_LINK}`;
 
   const shareData = { text: textToShare };
 

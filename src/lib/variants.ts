@@ -305,9 +305,10 @@ const generateFoulPairs = (solution: string, numPairs: number): string => {
     let x: string | null = null;
     let y: string | null = null;
     let tries = 0;
-    const reducedSolutionVowels = includedPairs.length === 0 ?
-      solutionVowels :
-      solutionVowels.filter((letter) => !includedLetters.includes(letter));
+    const reducedSolutionVowels =
+      includedPairs.length === 0
+        ? solutionVowels
+        : solutionVowels.filter((letter) => !includedLetters.includes(letter));
     while (x === null) {
       y = null;
       if (tries >= 10) {
@@ -350,7 +351,8 @@ const generateFoulPairs = (solution: string, numPairs: number): string => {
 
           return (
             pseudoSolution === solutionLower ||
-            (!VALID_GUESSES.includes(pseudoSolution) && !WORDS.includes(pseudoSolution))
+            (!VALID_GUESSES.includes(pseudoSolution) &&
+              !WORDS.includes(pseudoSolution))
           );
         });
         if (pair) {
@@ -369,11 +371,15 @@ const generateFoulPairs = (solution: string, numPairs: number): string => {
       for (let j = 0; j < 2; ++j) {
         let vowel: string;
         if (reducedSolutionVowels.length > 0 && randBetweenRange(0, 3) === 0) {
-          vowel = reducedSolutionVowels[randBetweenRange(0, reducedSolutionVowels.length)];
+          vowel =
+            reducedSolutionVowels[
+              randBetweenRange(0, reducedSolutionVowels.length)
+            ];
         } else {
           const wordWithVowel = WORDS[randBetweenRange(0, WORDS.length)];
-          let vowels = unicodeSplit(wordWithVowel).filter((letter) =>
-            'aeiou'.includes(letter) && !includedLetters.includes(letter)
+          let vowels = unicodeSplit(wordWithVowel).filter(
+            (letter) =>
+              'aeiou'.includes(letter) && !includedLetters.includes(letter)
           );
           if (vowels.length === 0) {
             // console.log('bad word choice');
@@ -411,7 +417,8 @@ const generateFoulPairs = (solution: string, numPairs: number): string => {
               .replaceAll('!', y);
             if (
               pseudoSolution !== solutionLower &&
-              (VALID_GUESSES.includes(pseudoSolution) || WORDS.includes(pseudoSolution))
+              (VALID_GUESSES.includes(pseudoSolution) ||
+                WORDS.includes(pseudoSolution))
             ) {
               // console.log(x, y);
               // console.log(pseudoSolution);

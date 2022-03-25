@@ -9,6 +9,7 @@ import { default as GraphemeSplitter } from 'grapheme-splitter';
 import {
   generateVariant,
   getVariantKey,
+  getVariantTitle,
   VariantKey,
   variantLimits,
 } from './variants';
@@ -127,7 +128,6 @@ export const getVariantOfDay = (data: {
   // }
 
   return generateVariant(data.solution, variantKey);
-
 };
 
 export const getWordOfDay = () => {
@@ -147,7 +147,6 @@ export const getWordOfDay = () => {
   }
   let solution = localeAwareUpperCase(WORDS[index % WORDS.length]);
 
-
   const variant = getVariantOfDay({
     solution,
     solutionIndex: index,
@@ -165,6 +164,7 @@ export const getWordOfDay = () => {
     tomorrow: nextday,
     variant,
     variantKey: getVariantKey(variant),
+    variantTitle: getVariantTitle(variant),
     maxChallenges: variantLimits[getVariantKey(variant)],
   };
 };
@@ -175,5 +175,6 @@ export const {
   tomorrow,
   variant,
   variantKey,
+  variantTitle,
   maxChallenges,
 } = getWordOfDay();
