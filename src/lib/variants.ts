@@ -23,7 +23,8 @@ export type VariantKey =
   | 'BOND1'
   | 'MINE1'
   | 'SHYE1'
-  | 'TOBE3';
+  | 'TOBE3'
+  | 'AMOG3';
 
 export const variantTitles: Record<VariantKey, string> = {
   FOUL1: 'Fair is Foul',
@@ -39,6 +40,7 @@ export const variantTitles: Record<VariantKey, string> = {
   AMOG2: 'Two Impostors',
 
   TOBE3: 'To Be or Not to Be III',
+  AMOG3: 'Three Impostors',
 };
 
 export const variantLimits: Record<VariantKey, number> = {
@@ -55,6 +57,7 @@ export const variantLimits: Record<VariantKey, number> = {
   AMOG2: 8,
 
   TOBE3: 10,
+  AMOG3: 9,
 };
 
 export type VariantStatusModifier = {
@@ -84,6 +87,13 @@ const augmentCharObjForVariant = (charObj: { [key: string]: CharStatus }) => {
       break;
     case 'AMOG2':
       [variant[6], variant[7]].forEach((impostor) => {
+        if (charObj[impostor] === 'absent') {
+          charObj[impostor] = 'present';
+        }
+      });
+      break;
+    case 'AMOG3':
+      [variant[6], variant[7], variant[8]].forEach((impostor) => {
         if (charObj[impostor] === 'absent') {
           charObj[impostor] = 'present';
         }
@@ -517,6 +527,9 @@ const generateFoulPairs = (solution: string, numPairs: number): string => {
 
 export const generateVariant = (solution: string, key: VariantKey): string => {
   let foulLetters: string;
+  let impostor1: string;
+  let impostor2: string;
+  let impostor3: string;
   switch (key) {
     case 'TOBE1':
     case 'TOBE2':
@@ -525,9 +538,14 @@ export const generateVariant = (solution: string, key: VariantKey): string => {
     case 'AMOG1':
       return `AMOG1:${generateImpostor(solution, [])}`;
     case 'AMOG2':
-      const impostor1 = generateImpostor(solution, []);
-      const impostor2 = generateImpostor(solution, [impostor1]);
-      return `AMOG1:${impostor1}${impostor2}`;
+      impostor1 = generateImpostor(solution, []);
+      impostor2 = generateImpostor(solution, [impostor1]);
+      return `AMOG2:${impostor1}${impostor2}`;
+    case 'AMOG3':
+      impostor1 = generateImpostor(solution, []);
+      impostor2 = generateImpostor(solution, [impostor1]);
+      impostor3 = generateImpostor(solution, [impostor1, impostor2]);
+      return `AMOG3:${impostor1}${impostor2}${impostor3}`;
     case 'FOUL1':
       foulLetters = generateFoulPairs(solution, 1);
       if (foulLetters.length === 0) {

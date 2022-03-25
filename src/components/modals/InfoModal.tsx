@@ -70,6 +70,19 @@ const modalContentForVariant: Record<VariantKey, Info> = {
       },
     ],
   },
+  AMOG3: {
+    description: [
+      "Today's variation: three letters are impostors. They are not in the word, but appear yellow (blue in high-contrast). More common letters are more likely to be impostors.",
+    ],
+    examples: [
+      {
+        guess: 'PILOT',
+        statuses: [null, null, 'present', null, null],
+        explanation:
+          'The letter L could in the word but in the wrong spot, or it could be an impostor.',
+      },
+    ],
+  },
   TOBE1: {
     description: [
       "Today's variation: the letters B and E are red. They will only change colour if you place all other letters correctly.",
