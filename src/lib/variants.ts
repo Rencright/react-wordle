@@ -26,7 +26,7 @@ export const variantTitles: Record<VariantKey, string> = {
   FOUL1: 'Fair is Foul',
   TOBE1: 'To Be or Not to Be',
   AMOG1: 'One Impostor',
-  GREE1: 'Being Green',
+  GREE1: 'The Optimist',
   BOND1: 'Sweet Sorrow',
 
   FOUL2: 'Fair is Foul II',

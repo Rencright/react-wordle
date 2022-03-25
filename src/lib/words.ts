@@ -12,6 +12,7 @@ import {
   getVariantTitle,
   VariantKey,
   variantLimits,
+  variantTitles,
 } from './variants';
 
 export const isWordInWordList = (word: string) => {
@@ -84,64 +85,52 @@ export const localeAwareUpperCase = (text: string) => {
     : text.toUpperCase();
 };
 
+const getVariantKeyOfDay = (solutionIndex: number): VariantKey => {
+  const overrideVariant = process.env.REACT_APP_OVERRIDE_VARIANT;
+  if (overrideVariant && Object.keys(variantTitles).includes(overrideVariant)) {
+    return overrideVariant as VariantKey;
+  }
+
+  switch (solutionIndex % 8) {
+    case 0:
+      return 'TOBE1';
+    case 1:
+      return 'AMOG1';
+    case 2:
+      return 'FOUL1';
+    case 3:
+      return 'GREE1';
+    case 4:
+      return 'BOND1';
+    case 5:
+      return 'TOBE2';
+    case 6:
+      return 'FOUL2';
+    case 7:
+      return 'AMOG2';
+    default:
+      console.error('ERROR - integers have stopped working!');
+      return 'GREE1';
+  }
+}
+
 export const getVariantOfDay = (data: {
   solution: string;
   solutionIndex: number;
 }): string => {
-  // console.log(solutionIndex);
-  // return 'AMOG1:E';
-
-  // console.log(data.solutionIndex);
-  let variantKey: VariantKey;
-  switch (data.solutionIndex % 8) {
-    case 0:
-      variantKey = 'TOBE1';
-      break;
-    case 1:
-      variantKey = 'AMOG1';
-      break;
-    case 2:
-      variantKey = 'FOUL1';
-      break;
-    case 3:
-      variantKey = 'GREE1';
-      break;
-    case 4:
-      variantKey = 'BOND1';
-      break;
-    case 5:
-      variantKey = 'TOBE2';
-      break;
-    case 6:
-      variantKey = 'FOUL2';
-      break;
-    case 7:
-      variantKey = 'AMOG2';
-      break;
-    default:
-      console.error('ERROR - integers have stopped working!');
-      variantKey = 'GREE1';
-  }
-
-  // if (true) {
-  //   variantKey = 'TOBE1';
-  // }
+  let variantKey = getVariantKeyOfDay(data.solutionIndex);
 
   return generateVariant(data.solution, variantKey);
 };
 
 export const getWordOfDay = () => {
-  // January 1, 2022 Game Epoch
+  // March 22, 2022 Game Epoch
   const epochMs = new Date(2022, 2, 22).valueOf();
   const now = Date.now();
   const msInDay = 86400000;
   let index = Math.floor((now - epochMs) / msInDay);
   const nextday = (index + 1) * msInDay + epochMs;
-  // console.log(index);
-  // console.log(WORDS.length);
-  // console.log(process.env.SPECIAL_MODE);
-  // console.log(process.env.RANDOM_SEED);
-  // console.log(process.env);
+
   if (process.env.REACT_APP_SPECIAL_MODE === 'chaoticiteration') {
     index = now;
   }
@@ -151,12 +140,6 @@ export const getWordOfDay = () => {
     solution,
     solutionIndex: index,
   });
-
-  // console.log(solution);
-  // console.log(variant);
-  // if (!variant.startsWith('FOUL2') || variant.length !== 10) {
-  //   console.error('FAILURE');
-  // }
 
   return {
     solution,
