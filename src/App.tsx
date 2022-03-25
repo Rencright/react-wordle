@@ -25,6 +25,7 @@ import {
   maxChallenges,
   findFirstUnusedReveal,
   unicodeLength,
+  variant,
 } from './lib/words';
 import { addStatsForCompletedGame, loadStats } from './lib/stats';
 import {
@@ -32,6 +33,7 @@ import {
   saveGameStateToLocalStorage,
   setStoredIsHighContrastMode,
   getStoredIsHighContrastMode,
+  loadStatsFromLocalStorage,
 } from './lib/localStorage';
 import { default as GraphemeSplitter } from 'grapheme-splitter';
 
@@ -39,6 +41,7 @@ import './App.css';
 import { AlertContainer } from './components/alerts/AlertContainer';
 import { useAlert } from './context/AlertContext';
 import { Navbar } from './components/navbar/Navbar';
+import { getVariantKey } from './lib/variants';
 
 function App() {
   const prefersDarkMode = window.matchMedia(
@@ -96,6 +99,18 @@ function App() {
       setTimeout(() => {
         setIsInfoModalOpen(true);
       }, WELCOME_INFO_MODAL_MS);
+    } else {
+      const stats = loadStatsFromLocalStorage();
+      const variantKey = getVariantKey(variant);
+      if (
+        !stats ||
+        !stats.statsByVariant[variantKey] ||
+        !stats.statsByVariant[variantKey].totalGames
+      ) {
+        setTimeout(() => {
+          setIsInfoModalOpen(true);
+        }, WELCOME_INFO_MODAL_MS);
+      }
     }
   }, []);
 

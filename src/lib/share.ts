@@ -1,8 +1,9 @@
 import { getGuessStatuses } from './statuses';
-import { solutionIndex, unicodeSplit } from './words';
+import { maxChallenges, solutionIndex, unicodeSplit, variant } from './words';
 import { GAME_TITLE } from '../constants/strings';
 import { MAX_CHALLENGES } from '../constants/settings';
 import { UAParser } from 'ua-parser-js';
+import { variantLimits } from './variants';
 
 const webShareApiDeviceTypes: string[] = ['mobile', 'smarttv', 'wearable'];
 const parser = new UAParser();
@@ -20,7 +21,7 @@ export const shareStatus = (
   const textToShare =
     `${GAME_TITLE} ${solutionIndex} ${
       lost ? 'X' : guesses.length
-    }/${MAX_CHALLENGES}${isHardMode ? '*' : ''}\n\n` +
+    }/${maxChallenges}${isHardMode ? '*' : ''}\n\n` +
     generateEmojiGrid(guesses, getEmojiTiles(isDarkMode, isHighContrastMode));
 
   const shareData = { text: textToShare };
@@ -55,6 +56,8 @@ export const generateEmojiGrid = (guesses: string[], tiles: string[]) => {
               return tiles[0];
             case 'present':
               return tiles[1];
+            case 'secret':
+              return tiles[3];
             default:
               return tiles[2];
           }
@@ -80,5 +83,6 @@ const getEmojiTiles = (isDarkMode: boolean, isHighContrastMode: boolean) => {
   tiles.push(isHighContrastMode ? '🟧' : '🟩');
   tiles.push(isHighContrastMode ? '🟦' : '🟨');
   tiles.push(isDarkMode ? '⬛' : '⬜');
+  tiles.push(isHighContrastMode ? '🟪' : '🟥');
   return tiles;
 };

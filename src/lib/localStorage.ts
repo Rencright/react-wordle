@@ -17,14 +17,20 @@ export const loadGameStateFromLocalStorage = () => {
 
 const gameStatKey = 'gameStats';
 
-export type GameStats = {
+export interface GameTypeStats {
   winDistribution: number[];
   gamesFailed: number;
   currentStreak: number;
   bestStreak: number;
   totalGames: number;
   successRate: number;
-};
+}
+
+export interface GameStats extends GameTypeStats {
+  statsByVariant: {
+    [key: string]: GameTypeStats;
+  };
+}
 
 export const saveStatsToLocalStorage = (gameStats: GameStats) => {
   localStorage.setItem(gameStatKey, JSON.stringify(gameStats));

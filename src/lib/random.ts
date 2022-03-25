@@ -9,7 +9,7 @@ export const randBetweenRange = (start: number, stop: number): number => {
 };
 
 export const randomShuffle = <T>(items: T[]): T[] => {
-  const startTime = new Date().getTime();
+  // const startTime = new Date().getTime();
   let shuffledItems = [...items];
   for (let i = items.length - 2; i >= 0; i = i - 1) {
     const j = randBetweenRange(0, i + 1);
@@ -17,6 +17,6 @@ export const randomShuffle = <T>(items: T[]): T[] => {
     shuffledItems[i] = shuffledItems[j];
     shuffledItems[j] = temp;
   }
-  console.log(new Date().getTime() - startTime);
+  // console.info(new Date().getTime() - startTime);
   return shuffledItems;
 };

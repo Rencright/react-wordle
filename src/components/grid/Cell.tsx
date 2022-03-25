@@ -35,12 +35,14 @@ export const Cell = ({
         status === 'correct' && isHighContrast,
       'present shadowed bg-cyan-500 text-white border-cyan-500':
         status === 'present' && isHighContrast,
+      'secret shadowed bg-fuchsia-500 text-white border-fuchsia-500':
+        status === 'secret' && isHighContrast,
       'correct shadowed bg-green-500 text-white border-green-500':
         status === 'correct' && !isHighContrast,
       'present shadowed bg-yellow-500 text-white border-yellow-500':
         status === 'present' && !isHighContrast,
       'secret shadowed bg-red-500 text-white border-red-500':
-        status === 'secret',
+        status === 'secret' && !isHighContrast,
       'cell-fill-animation': isFilled,
       'cell-reveal': shouldReveal,
     }

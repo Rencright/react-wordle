@@ -24,6 +24,7 @@
 .high-contrast {
   --correct-cell-bg-color: theme('colors.orange.400');
   --present-cell-bg-color: theme('colors.cyan.400');
+  --secret-cell-bg-color: theme('colors.pink.400');
 }
 
 .cell-fill-animation {

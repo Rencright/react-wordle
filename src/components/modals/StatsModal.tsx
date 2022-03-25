@@ -3,7 +3,7 @@ import { StatBar } from '../stats/StatBar';
 import { Histogram } from '../stats/Histogram';
 import { GameStats } from '../../lib/localStorage';
 import { shareStatus } from '../../lib/share';
-import { tomorrow } from '../../lib/words';
+import { tomorrow, variantKey } from '../../lib/words';
 import { BaseModal } from './BaseModal';
 import {
   STATISTICS_TITLE,
@@ -11,6 +11,7 @@ import {
   NEW_WORD_TEXT,
   SHARE_TEXT,
 } from '../../constants/strings';
+import { getVariantTitle, variantLimits } from '../../lib/variants';
 
 type Props = {
   isOpen: boolean;
@@ -50,6 +51,36 @@ export const StatsModal = ({
       </BaseModal>
     );
   }
+  if ((gameStats.statsByVariant[variantKey]?.totalGames || 0) <= 0) {
+    return (
+      <BaseModal
+        title={STATISTICS_TITLE}
+        isOpen={isOpen}
+        handleClose={handleClose}
+      >
+        <StatBar gameStats={gameStats} />
+        <h4 className="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">
+          {getVariantTitle(variantKey)}
+        </h4>
+        <StatBar
+          gameStats={
+            gameStats.statsByVariant[variantKey] || {
+              winDistribution: Array.from(
+                new Array(variantLimits[variantKey]),
+                () => 0
+              ),
+              gamesFailed: 0,
+              currentStreak: 0,
+              bestStreak: 0,
+              totalGames: 0,
+              successRate: 0,
+            }
+          }
+        />
+      </BaseModal>
+    );
+  }
+
   return (
     <BaseModal
       title={STATISTICS_TITLE}
@@ -58,10 +89,14 @@ export const StatsModal = ({
     >
       <StatBar gameStats={gameStats} />
       <h4 className="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">
+        {getVariantTitle(variantKey)}
+      </h4>
+      <StatBar gameStats={gameStats.statsByVariant[variantKey]} />
+      <h4 className="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">
         {GUESS_DISTRIBUTION_TEXT}
       </h4>
       <Histogram
-        gameStats={gameStats}
+        gameStats={gameStats.statsByVariant[variantKey]}
         numberOfGuessesMade={numberOfGuessesMade}
       />
       {(isGameLost || isGameWon) && (

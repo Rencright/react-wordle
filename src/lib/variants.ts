@@ -1,3 +1,4 @@
+/* eslint-disable no-loop-func */
 // import { solutionIndex } from "./words";
 import { VALID_GUESSES } from '../constants/validGuesses';
 import { WORDS } from '../constants/wordlist';
@@ -61,11 +62,7 @@ export type VariantKeyboardStatusModifier = {
   };
 };
 
-const augmentCharObjForVariant = (
-  charObj: { [key: string]: CharStatus },
-  guesses: string[]
-) => {
-  // console.log(solution);
+const augmentCharObjForVariant = (charObj: { [key: string]: CharStatus }) => {
   const variantKey = getVariantKey(variant);
   switch (variantKey) {
     case 'AMOG1':
@@ -116,23 +113,23 @@ export const getVariantKeyboardStatusModifier = (
       const swap2 = variant[7];
       return {
         solution: solution
-          .replace(swap1, '!')
-          .replace(swap2, swap1)
-          .replace('!', swap2),
+          .replaceAll(swap1, '!')
+          .replaceAll(swap2, swap1)
+          .replaceAll('!', swap2),
       };
     case 'FOUL2':
       const swaps = variant.substr(6);
       return {
         solution: solution
-          .replace(swaps[0], '!')
-          .replace(swaps[1], swaps[0])
-          .replace('!', swaps[1])
-          .replace(swaps[2], '!')
-          .replace(swaps[3], swaps[2])
-          .replace('!', swaps[3]),
+          .replaceAll(swaps[0], '!')
+          .replaceAll(swaps[1], swaps[0])
+          .replaceAll('!', swaps[1])
+          .replaceAll(swaps[2], '!')
+          .replaceAll(swaps[3], swaps[2])
+          .replaceAll('!', swaps[3]),
       };
     default:
-      return { tweak: (charObj) => augmentCharObjForVariant(charObj, guesses) };
+      return { tweak: (charObj) => augmentCharObjForVariant(charObj) };
   }
 };
 
@@ -196,20 +193,20 @@ export const getVariantStatusModifier = (
       const swap2 = variant[7];
       return {
         solution: solution
-          .replace(swap1, '!')
-          .replace(swap2, swap1)
-          .replace('!', swap2),
+          .replaceAll(swap1, '!')
+          .replaceAll(swap2, swap1)
+          .replaceAll('!', swap2),
       };
     case 'FOUL2':
       const swaps = variant.substr(6);
       return {
         solution: solution
-          .replace(swaps[0], '!')
-          .replace(swaps[1], swaps[0])
-          .replace('!', swaps[1])
-          .replace(swaps[2], '!')
-          .replace(swaps[3], swaps[2])
-          .replace('!', swaps[3]),
+          .replaceAll(swaps[0], '!')
+          .replaceAll(swaps[1], swaps[0])
+          .replaceAll('!', swaps[1])
+          .replaceAll(swaps[2], '!')
+          .replaceAll(swaps[3], swaps[2])
+          .replaceAll('!', swaps[3]),
       };
     case 'GREE1':
       return {
@@ -225,14 +222,25 @@ export const getVariantStatusModifier = (
           statuses.map((status, i) => {
             // Make sure that this is the correct instance of the letter.
             let countDiscrepancy = 0;
-            if (guess[i] === solution[bondIndex - 1] || guess[i] === solution[bondIndex]) {
-              const targetIndex = (guess[i] === solution[bondIndex]) ? bondIndex : (bondIndex - 1);
-              const guessCount = unicodeSplit(guess.substr(0, i)).filter((l) => l === guess[i]).length;
-              const solutionCount =  unicodeSplit(solution.substr(0, targetIndex)).filter((l) => l === guess[i]).length;
+            if (
+              guess[i] === solution[bondIndex - 1] ||
+              guess[i] === solution[bondIndex]
+            ) {
+              const targetIndex =
+                guess[i] === solution[bondIndex] ? bondIndex : bondIndex - 1;
+              const guessCount = unicodeSplit(guess.substr(0, i)).filter(
+                (l) => l === guess[i]
+              ).length;
+              const solutionCount = unicodeSplit(
+                solution.substr(0, targetIndex)
+              ).filter((l) => l === guess[i]).length;
               countDiscrepancy = guessCount - solutionCount;
             }
 
-            if (guess[i] === solution[bondIndex - 1] && countDiscrepancy === 0) {
+            if (
+              guess[i] === solution[bondIndex - 1] &&
+              countDiscrepancy === 0
+            ) {
               if (i < 4 && guess[i + 1] === solution[bondIndex]) {
                 return 'correct';
               } else {
@@ -248,7 +256,7 @@ export const getVariantStatusModifier = (
               return status;
             }
           }),
-      }
+      };
   }
 
   return {};
@@ -289,25 +297,32 @@ const generateFoulPairs = (solution: string, numPairs: number): string => {
     'aeiou'.includes(letter)
   );
   let includedLetters: string[] = [];
+  let includedPairs: string[][] = [];
   let numResets = 0;
-  for (let i = 0; i < numPairs; ++i) {
+
+  while (includedPairs.length < numPairs) {
+    let existingPairCount = includedPairs.length;
     let x: string | null = null;
     let y: string | null = null;
     let tries = 0;
+    const reducedSolutionVowels = includedPairs.length === 0 ?
+      solutionVowels :
+      solutionVowels.filter((letter) => !includedLetters.includes(letter));
     while (x === null) {
+      y = null;
       if (tries >= 10) {
         const skipLetters = includedLetters;
         let pair = [
-          'AE',
-          'EI',
-          'EO',
-          'EU',
-          'AI',
-          'AO',
-          'AU',
-          'IO',
-          'IU',
-          'OU',
+          'ae',
+          'ei',
+          'eo',
+          'eu',
+          'ai',
+          'ao',
+          'au',
+          'io',
+          'iu',
+          'ou',
         ].find((letters) => {
           const a = letters[0];
           const b = letters[1];
@@ -317,66 +332,115 @@ const generateFoulPairs = (solution: string, numPairs: number): string => {
           ) {
             return false;
           }
-          const pseudoSolution = solution
-            .replace(a, '!')
-            .replace(b, a)
-            .replace('!', b);
+          if (existingPairCount < numPairs - 1) {
+            return true;
+          }
+          let pseudoSolution = includedPairs.reduce(
+            (sol, pair) =>
+              sol
+                .replaceAll(pair[0], '!')
+                .replaceAll(pair[1], pair[0])
+                .replaceAll('!', pair[1]),
+            solutionLower
+          );
+          pseudoSolution = pseudoSolution
+            .replaceAll(a as string, '!')
+            .replaceAll(b, a as string)
+            .replaceAll('!', b);
+
           return (
-            pseudoSolution === solution ||
-            !VALID_GUESSES.includes(pseudoSolution)
+            pseudoSolution === solutionLower ||
+            (!VALID_GUESSES.includes(pseudoSolution) && !WORDS.includes(pseudoSolution))
           );
         });
         if (pair) {
           x = pair[0];
           y = pair[1];
+          // console.log('SUCCESS?');
         } else {
+          // console.log('RESET');
           x = 'RESET';
           y = null;
         }
+        continue;
       }
       tries += 1;
+      // console.log(tries);
       for (let j = 0; j < 2; ++j) {
         let vowel: string;
-        if (randBetweenRange(0, 2) === 0) {
-          vowel = solutionVowels[randBetweenRange(0, solutionVowels.length)];
+        if (reducedSolutionVowels.length > 0 && randBetweenRange(0, 3) === 0) {
+          vowel = reducedSolutionVowels[randBetweenRange(0, reducedSolutionVowels.length)];
         } else {
           const wordWithVowel = WORDS[randBetweenRange(0, WORDS.length)];
-          const vowels = unicodeSplit(wordWithVowel).filter((letter) =>
-            'aeiou'.includes(letter)
+          let vowels = unicodeSplit(wordWithVowel).filter((letter) =>
+            'aeiou'.includes(letter) && !includedLetters.includes(letter)
           );
-          vowel = vowels[randBetweenRange(0, solutionVowels.length)];
+          if (vowels.length === 0) {
+            // console.log('bad word choice');
+            x = null;
+            j = 2;
+            continue;
+          }
+          vowel = vowels[randBetweenRange(0, vowels.length)];
         }
         if (includedLetters.includes(vowel)) {
-          break;
+          // console.log('!!', vowel, x, includedLetters);
+          j = 2;
+          x = null;
+          continue;
         }
         if (j === 0) {
           x = vowel;
         } else {
           y = vowel;
           if (x === y) {
+            // console.log(x);
             x = null;
-          } else {
-            const pseudoSolution = solution
-              .replace(x as string, '!')
-              .replace(y, x as string)
-              .replace('!', y);
+          } else if (existingPairCount === numPairs - 1) {
+            let pseudoSolution = includedPairs.reduce(
+              (sol, pair) =>
+                sol
+                  .replaceAll(pair[0], '!')
+                  .replaceAll(pair[1], pair[0])
+                  .replaceAll('!', pair[1]),
+              solutionLower
+            );
+            pseudoSolution = pseudoSolution
+              .replaceAll(x as string, '!')
+              .replaceAll(y, x as string)
+              .replaceAll('!', y);
             if (
-              pseudoSolution !== solution &&
-              VALID_GUESSES.includes(pseudoSolution)
+              pseudoSolution !== solutionLower &&
+              (VALID_GUESSES.includes(pseudoSolution) || WORDS.includes(pseudoSolution))
             ) {
+              // console.log(x, y);
+              // console.log(pseudoSolution);
               x = null;
               y = null;
             }
+            // else {
+            //   console.log('VALIDATED: ', pseudoSolution);
+            //   console.log(includedPairs);
+            // }
           }
         }
       }
     }
-    if (x !== null && y !== null) {
+    if (x && y) {
       includedLetters.push(x, y);
+      includedPairs.push([x, y]);
+      // console.log('ADDED!', x, y);
     } else if (includedLetters.length > 0 && numResets < 5) {
+      // console.log(':(');
+      // console.log(includedLetters);
+      // console.log(x, y);
       includedLetters = [];
+      includedPairs = [];
       numResets += 1;
+      tries = 0;
     } else {
+      // console.log('????');
+      // console.log(numResets);
       return '';
     }
   }

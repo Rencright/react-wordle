@@ -1,4 +1,4 @@
-import { GameStats } from '../../lib/localStorage';
+import { GameTypeStats } from '../../lib/localStorage';
 import {
   TOTAL_TRIES_TEXT,
   SUCCESS_RATE_TEXT,
@@ -7,7 +7,7 @@ import {
 } from '../../constants/strings';
 
 type Props = {
-  gameStats: GameStats;
+  gameStats: GameTypeStats;
 };
 
 const StatItem = ({

@@ -90,9 +90,9 @@ export const getVariantOfDay = (data: {
   // console.log(solutionIndex);
   // return 'AMOG1:E';
 
-  console.log(data.solutionIndex);
+  // console.log(data.solutionIndex);
   let variantKey: VariantKey;
-  switch (data.solutionIndex % 7) {
+  switch (data.solutionIndex % 8) {
     case 0:
       variantKey = 'TOBE1';
       break;
@@ -114,27 +114,20 @@ export const getVariantOfDay = (data: {
     case 6:
       variantKey = 'FOUL2';
       break;
+    case 7:
+      variantKey = 'AMOG2';
+      break;
     default:
       console.error('ERROR - integers have stopped working!');
       variantKey = 'GREE1';
   }
 
   // if (true) {
-  //   variantKey = 'BOND1';
+  //   variantKey = 'TOBE1';
   // }
 
   return generateVariant(data.solution, variantKey);
 
-  // if (data.solutionIndex < 4) {
-  //   return 'TOBE1';
-  // }
-  // if (data.solutionIndex < 5) {
-  //   const impostor1 = generateImpostor(data.solution, []);
-  //   const impostor2 = generateImpostor(data.solution, [impostor1]);
-  //   return `AMOG2:${impostor1}${impostor2}`;
-  // }
-
-  // return `AMOG1:${generateImpostor(data.solution, [])}`;
 };
 
 export const getWordOfDay = () => {
@@ -142,33 +135,45 @@ export const getWordOfDay = () => {
   const epochMs = new Date(2022, 2, 22).valueOf();
   const now = Date.now();
   const msInDay = 86400000;
-  const index =
-    process.env.REACT_APP_SPECIAL_MODE === 'chaoticiteration'
-      ? now
-      : Math.floor((now - epochMs) / msInDay);
+  let index = Math.floor((now - epochMs) / msInDay);
   const nextday = (index + 1) * msInDay + epochMs;
-  console.log(index);
-  console.log(WORDS.length);
-  console.log(process.env.SPECIAL_MODE);
-  console.log(process.env.RANDOM_SEED);
-  console.log(process.env);
-  const solution = localeAwareUpperCase(WORDS[index % WORDS.length]);
+  // console.log(index);
+  // console.log(WORDS.length);
+  // console.log(process.env.SPECIAL_MODE);
+  // console.log(process.env.RANDOM_SEED);
+  // console.log(process.env);
+  if (process.env.REACT_APP_SPECIAL_MODE === 'chaoticiteration') {
+    index = now;
+  }
+  let solution = localeAwareUpperCase(WORDS[index % WORDS.length]);
+
 
   const variant = getVariantOfDay({
     solution,
     solutionIndex: index,
   });
 
-  console.log(variant);
+  // console.log(solution);
+  // console.log(variant);
+  // if (!variant.startsWith('FOUL2') || variant.length !== 10) {
+  //   console.error('FAILURE');
+  // }
 
   return {
     solution,
     solutionIndex: index,
     tomorrow: nextday,
     variant,
+    variantKey: getVariantKey(variant),
     maxChallenges: variantLimits[getVariantKey(variant)],
   };
 };
 
-export const { solution, solutionIndex, tomorrow, variant, maxChallenges } =
-  getWordOfDay();
+export const {
+  solution,
+  solutionIndex,
+  tomorrow,
+  variant,
+  variantKey,
+  maxChallenges,
+} = getWordOfDay();
