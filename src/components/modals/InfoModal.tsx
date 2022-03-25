@@ -53,7 +53,7 @@ const modalContentForVariant: Record<VariantKey, Info> = {
         guess: 'PILOT',
         statuses: [null, null, 'present', null, null],
         explanation:
-          'The letter L could in the word but in the wrong spot, or it could be the impostor.',
+          'The letter L could be in the word but in the wrong spot, or it could be the impostor.',
       },
     ],
   },
@@ -66,7 +66,7 @@ const modalContentForVariant: Record<VariantKey, Info> = {
         guess: 'PILOT',
         statuses: [null, null, 'present', null, null],
         explanation:
-          'The letter L could in the word but in the wrong spot, or it could be an impostor.',
+          'The letter L could be in the word but in the wrong spot, or it could be an impostor.',
       },
     ],
   },
@@ -79,7 +79,7 @@ const modalContentForVariant: Record<VariantKey, Info> = {
         guess: 'PILOT',
         statuses: [null, null, 'present', null, null],
         explanation:
-          'The letter L could in the word but in the wrong spot, or it could be an impostor.',
+          'The letter L could be in the word but in the wrong spot, or it could be an impostor.',
       },
     ],
   },
