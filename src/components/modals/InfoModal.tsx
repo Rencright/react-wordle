@@ -105,7 +105,7 @@ const modalContentForVariant: Record<VariantKey, Info> = {
   TOBE3: {
     description: [
       "Today's variation: the letters T, O, B, and E, R, and N are ALL red. They will only change colour if you place all other letters correctly.",
-      "There are some words that can be spelled entirely using these letters."
+      'There are some words that can be spelled entirely using these letters.',
     ],
     examples: [
       {
@@ -228,7 +228,7 @@ const modalContentForVariant: Record<VariantKey, Info> = {
         guess: 'FLYER',
         statuses: [null, null, null, 'absent', null],
         explanation:
-          'The letter E is not in the word, unless it\'s the shy letter, in which case it\'s not in the fourth position.',
+          "The letter E is not in the word, unless it's the shy letter, in which case it's not in the fourth position.",
       },
       {
         guess: 'BOOTS',
@@ -250,7 +250,7 @@ export const InfoModal = ({ isOpen, handleClose }: Props) => {
       handleClose={handleClose}
     >
       <p className="text-sm text-gray-500 dark:text-gray-300">
-        {'This is Wordle with a twist!'}
+        {"It's Wordle with a twist!"}
       </p>
       {modalContent.description.map((line) => (
         <p key={line} className="text-sm text-gray-500 dark:text-gray-300">
