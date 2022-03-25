@@ -102,6 +102,32 @@ const modalContentForVariant: Record<VariantKey, Info> = {
       },
     ],
   },
+  TOBE3: {
+    description: [
+      "Today's variation: the letters T, O, B, and E, R, and N are ALL red. They will only change colour if you place all other letters correctly.",
+      "There are some words that can be spelled entirely using these letters."
+    ],
+    examples: [
+      {
+        guess: 'LABOR',
+        statuses: [null, null, 'secret', null, null],
+        explanation:
+          'You cannot learn anything about whether B is in the word or not.',
+      },
+      {
+        guess: 'THESE',
+        statuses: ['correct', 'correct', 'absent', 'correct', 'correct'],
+        explanation:
+          "The correct word is clearly THOSE. Now that you've placed all non-red letters, the red letters reveal their true colours.",
+      },
+      {
+        guess: 'BREAK',
+        statuses: ['secret', 'secret', 'secret', 'correct', 'correct'],
+        explanation:
+          "A and K are in the right spots, but there must be another non-red letter or the red letters wouldn't still be red.",
+      },
+    ],
+  },
   GREE1: {
     description: [
       "Today's variation: one letter in the word is happy. It always thinks it's in the right spot - it will appear green (or orange - right letter in right spot) whenever it would appear yellow (or blue - right letter in wrong spot).",
@@ -190,6 +216,25 @@ const modalContentForVariant: Record<VariantKey, Info> = {
         statuses: ['absent', 'present', 'correct', 'absent', 'absent'],
         explanation:
           "B, N, and G are not in the word, but they're not the classified letter, so you can safely use them in other guesses.",
+      },
+    ],
+  },
+  SHYE1: {
+    description: [
+      "Today's variation: one letter in the word is shy. A shy letter will appear grey (not in the word) unless it's in the correct spot.",
+    ],
+    examples: [
+      {
+        guess: 'FLYER',
+        statuses: [null, null, null, 'absent', null],
+        explanation:
+          'The letter E is not in the word, unless it\'s the shy letter, in which case it\'s not in the fourth position.',
+      },
+      {
+        guess: 'BOOTS',
+        statuses: ['correct', null, null, null, null],
+        explanation:
+          "B is in the word in the first position, whether it's the shy letter or not.",
       },
     ],
   },

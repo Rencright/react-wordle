@@ -21,7 +21,9 @@ export type VariantKey =
   | 'AMOG2'
   | 'GREE1'
   | 'BOND1'
-  | 'MINE1';
+  | 'MINE1'
+  | 'SHYE1'
+  | 'TOBE3';
 
 export const variantTitles: Record<VariantKey, string> = {
   FOUL1: 'Fair is Foul',
@@ -30,10 +32,13 @@ export const variantTitles: Record<VariantKey, string> = {
   GREE1: 'The Optimist',
   BOND1: 'Sweet Sorrow',
   MINE1: '[REDACTED]',
+  SHYE1: "Don't Be Shy",
 
   FOUL2: 'Fair is Foul II',
   TOBE2: 'To Be or Not to Be II',
   AMOG2: 'Two Impostors',
+
+  TOBE3: 'To Be or Not to Be III',
 };
 
 export const variantLimits: Record<VariantKey, number> = {
@@ -43,10 +48,13 @@ export const variantLimits: Record<VariantKey, number> = {
   GREE1: 7,
   BOND1: 7,
   MINE1: 7,
+  SHYE1: 7,
 
   FOUL2: 8,
   TOBE2: 8,
   AMOG2: 8,
+
+  TOBE3: 10,
 };
 
 export type VariantStatusModifier = {
@@ -81,6 +89,14 @@ const augmentCharObjForVariant = (charObj: { [key: string]: CharStatus }) => {
         }
       });
       break;
+    case 'TOBE3':
+      charObj['T'] = 'secret';
+      charObj['O'] = 'secret';
+      charObj['B'] = 'secret';
+      charObj['E'] = 'secret';
+      charObj['R'] = 'secret';
+      charObj['N'] = 'secret';
+      break;
     case 'TOBE2':
       charObj['T'] = 'secret';
       charObj['O'] = 'secret';
@@ -102,6 +118,12 @@ const augmentCharObjForVariant = (charObj: { [key: string]: CharStatus }) => {
           charObj[char] = 'present';
         }
       });
+      break;
+    case 'SHYE1':
+      if (charObj[variant[6]] === 'present') {
+        charObj[variant[6]] = 'absent';
+      }
+      break;
   }
   return charObj;
 };
@@ -195,6 +217,23 @@ export const getVariantStatusModifier = (
           }
         },
       };
+    case 'TOBE3':
+      return {
+        tweak: (statuses) => {
+          const ignoreSecret = statuses.every(
+            (status, i) =>
+              status === 'correct' ||
+              ('TOBERN'.includes(guess[i]) && 'TOBERN'.includes(solution[i]))
+          );
+          if (ignoreSecret) {
+            return statuses;
+          } else {
+            return statuses.map((status, i) =>
+              'TOBERN'.includes(guess[i]) ? 'secret' : status
+            );
+          }
+        },
+      };
     case 'FOUL1':
       const swap1 = variant[6];
       const swap2 = variant[7];
@@ -272,6 +311,13 @@ export const getVariantStatusModifier = (
       } else {
         return {};
       }
+    case 'SHYE1':
+      return {
+        tweak: (statuses) =>
+          statuses.map((status, i) =>
+            guess[i] === variant[6] && status === 'present' ? 'absent' : status
+          ),
+      };
   }
 
   return {};
@@ -474,6 +520,7 @@ export const generateVariant = (solution: string, key: VariantKey): string => {
   switch (key) {
     case 'TOBE1':
     case 'TOBE2':
+    case 'TOBE3':
       return key;
     case 'AMOG1':
       return `AMOG1:${generateImpostor(solution, [])}`;
@@ -503,5 +550,8 @@ export const generateVariant = (solution: string, key: VariantKey): string => {
       return `BOND1:${n}`;
     case 'MINE1':
       return `MINE1:${generateImpostor(solution, [])}`;
+    case 'SHYE1':
+      let shyLetter = solution[randBetweenRange(0, 5)];
+      return `SHYE1:${shyLetter}`;
   }
 };
