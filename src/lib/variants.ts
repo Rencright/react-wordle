@@ -283,44 +283,103 @@ export const getVariantStatusModifier = (
     case 'BOND1':
       const bondIndex = parseInt(variant[6]);
       return {
-        tweak: (statuses) =>
-          statuses.map((status, i) => {
-            // Make sure that this is the correct instance of the letter.
-            let countDiscrepancy = 0;
-            if (
-              guess[i] === solution[bondIndex - 1] ||
-              guess[i] === solution[bondIndex]
-            ) {
-              const targetIndex =
-                guess[i] === solution[bondIndex] ? bondIndex : bondIndex - 1;
-              const guessCount = unicodeSplit(guess.substr(0, i)).filter(
-                (l) => l === guess[i]
-              ).length;
-              const solutionCount = unicodeSplit(
-                solution.substr(0, targetIndex)
-              ).filter((l) => l === guess[i]).length;
-              countDiscrepancy = guessCount - solutionCount;
-            }
+        tweak: (statuses) => {
+          let newStatuses = [...statuses];
+          let romeoIndex = bondIndex - 1;
+          let julietIndex = bondIndex;
+          let romeo = solution[bondIndex - 1];
+          let juliet = solution[bondIndex];
+          const splitSolution = unicodeSplit(solution);
+          const splitGuess = unicodeSplit(guess);
+          let romeoDuplicateIndex = splitSolution.reduce(
+            (count, l, i) =>
+              l === romeo && i < romeoIndex ? count + 1 : count,
+            0
+          );
+          let julietDuplicateIndex = splitSolution.reduce(
+            (count, l, i) =>
+              l === juliet && i < julietIndex ? count + 1 : count,
+            0
+          );
+          let romeoInstances = splitSolution.reduce(
+            (count, l, i) => (l === romeo ? count + 1 : count),
+            0
+          );
+          let julietInstances = splitSolution.reduce(
+            (count, l, i) => (l === juliet ? count + 1 : count),
+            0
+          );
 
-            if (
-              guess[i] === solution[bondIndex - 1] &&
-              countDiscrepancy === 0
-            ) {
-              if (i < 4 && guess[i + 1] === solution[bondIndex]) {
-                return 'correct';
-              } else {
-                return 'present';
+          let romeoIndicesInGuess = splitGuess
+            .map((letter, i) => (letter === romeo ? i : -1))
+            .filter((i) => i >= 0);
+          let julietIndicesInGuess = splitGuess
+            .map((letter, i) => (letter === juliet ? i : -1))
+            .filter((i) => i >= 0);
+
+          let correctRomeos: number[] = [];
+          romeoIndicesInGuess.forEach((index, duplicateIndex) => {
+            if (duplicateIndex === romeoDuplicateIndex) {
+              if (index < 4 && splitGuess[index + 1] === juliet) {
+                newStatuses[index] = 'correct';
+                correctRomeos.push(index);
               }
-            } else if (guess[i] === solution[bondIndex]) {
-              if (i > 0 && guess[i - 1] === solution[bondIndex - 1]) {
-                return 'correct';
-              } else {
-                return 'present';
+            } else if (
+              romeo === juliet &&
+              duplicateIndex === julietDuplicateIndex
+            ) {
+              if (index > 0 && splitGuess[index - 1] === romeo) {
+                newStatuses[index] = 'correct';
+                correctRomeos.push(index);
               }
             } else {
-              return status;
+              if (index !== romeoIndex && splitSolution[index] === romeo) {
+                newStatuses[index] = 'correct';
+                correctRomeos.push(index);
+              }
             }
-          }),
+          });
+          let runningRomeoCount = correctRomeos.length;
+          romeoIndicesInGuess.forEach((index) => {
+            if (!correctRomeos.includes(index)) {
+              if (runningRomeoCount < romeoInstances) {
+                newStatuses[index] = 'present';
+                runningRomeoCount += 1;
+              } else {
+                newStatuses[index] = 'absent';
+              }
+            }
+          });
+
+          if (romeo !== juliet) {
+            let correctJuliets: number[] = [];
+            julietIndicesInGuess.forEach((index, duplicateIndex) => {
+              if (duplicateIndex === julietDuplicateIndex) {
+                if (index > 0 && splitGuess[index - 1] === romeo) {
+                  newStatuses[index] = 'correct';
+                  correctJuliets.push(index);
+                }
+              } else {
+                if (index !== julietIndex && splitSolution[index] === juliet) {
+                  newStatuses[index] = 'correct';
+                  correctJuliets.push(index);
+                }
+              }
+            });
+            let runningJulietCount = correctJuliets.length;
+            julietIndicesInGuess.forEach((index) => {
+              if (!correctJuliets.includes(index)) {
+                if (runningJulietCount < julietInstances) {
+                  newStatuses[index] = 'present';
+                  runningJulietCount += 1;
+                } else {
+                  newStatuses[index] = 'absent';
+                }
+              }
+            });
+          }
+          return newStatuses;
+        },
       };
     case 'MINE1':
       if (guess.includes(variant[6])) {
