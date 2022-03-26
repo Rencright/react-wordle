@@ -250,13 +250,13 @@ function App() {
       setCurrentGuess('');
 
       if (winningWord) {
-        sendAnalyticsData(true, guesses.length);
+        sendAnalyticsData(true, guesses.length + 1);
         setStats(addStatsForCompletedGame(stats, guesses.length));
         return setIsGameWon(true);
       }
 
       if (guesses.length === maxChallenges - 1) {
-        sendAnalyticsData(false, guesses.length);
+        sendAnalyticsData(false, guesses.length + 1);
         setStats(addStatsForCompletedGame(stats, guesses.length + 1));
         setIsGameLost(true);
         showErrorAlert(CORRECT_WORD_MESSAGE(solution), {
