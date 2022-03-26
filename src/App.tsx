@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Grid } from './components/grid/Grid';
 import { Keyboard } from './components/keyboard/Keyboard';
 import { InfoModal } from './components/modals/InfoModal';
@@ -26,6 +27,7 @@ import {
   findFirstUnusedReveal,
   unicodeLength,
   variant,
+  solutionIndex,
 } from './lib/words';
 import { addStatsForCompletedGame, loadStats } from './lib/stats';
 import {
@@ -190,6 +192,16 @@ function App() {
     );
   };
 
+  const sendAnalyticsData = (isSuccess: boolean, numGuesses: number) => {
+    if (process.env.REACT_APP_SEND_ANALYTICS === 'true') {
+      axios.post('/.netlify/functions/logresult', {
+        solutionIndex,
+        isSuccess,
+        numGuesses,
+      });
+    }
+  };
+
   const onEnter = () => {
     if (isGameWon || isGameLost) {
       return;
@@ -238,11 +250,13 @@ function App() {
       setCurrentGuess('');
 
       if (winningWord) {
+        sendAnalyticsData(true, guesses.length);
         setStats(addStatsForCompletedGame(stats, guesses.length));
         return setIsGameWon(true);
       }
 
       if (guesses.length === maxChallenges - 1) {
+        sendAnalyticsData(false, guesses.length);
         setStats(addStatsForCompletedGame(stats, guesses.length + 1));
         setIsGameLost(true);
         showErrorAlert(CORRECT_WORD_MESSAGE(solution), {
