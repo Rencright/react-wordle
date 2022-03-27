@@ -12,8 +12,9 @@ import {
   getVariantTitle,
   variantLimits,
 } from './variants';
-import { EPOCH } from '../constants/settings';
+import { EPOCH_LUXON } from '../constants/settings';
 import { getVariantKeyOfDay } from './variantSchedule';
+import { DateTime } from 'luxon';
 
 export const isWordInWordList = (word: string) => {
   return (
@@ -96,9 +97,19 @@ export const getVariantOfDay = (data: {
 
 export const getWordOfDay = () => {
   const now = Date.now();
-  const msInDay = 86400000;
-  let index = Math.floor((now - EPOCH) / msInDay);
-  const nextday = (index + 1) * msInDay + EPOCH;
+  // const msInDay = 86400000;
+  // let index = Math.floor((now - EPOCH) / msInDay);
+  // const nextday = (index + 1) * msInDay + EPOCH;
+  const epoch = DateTime.fromObject(EPOCH_LUXON);
+  let index = Math.floor(-epoch.diffNow('days').days);
+  const nextDay = DateTime.now().set({
+    hour: 0,
+    minute: 0,
+    second: 0,
+    millisecond: 0,
+  }).plus({
+    day: 1
+  }).toMillis();
 
   if (process.env.REACT_APP_SPECIAL_MODE === 'chaoticiteration') {
     index = now;
@@ -113,7 +124,7 @@ export const getWordOfDay = () => {
   return {
     solution,
     solutionIndex: index,
-    tomorrow: nextday,
+    tomorrow: nextDay,
     variant,
     variantKey: getVariantKey(variant),
     variantTitle: getVariantTitle(variant),

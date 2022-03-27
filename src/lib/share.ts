@@ -21,7 +21,7 @@ export const shareStatus = (
   isHighContrastMode: boolean,
   handleShareToClipboard: () => void
 ) => {
-  const textToShare = `${GAME_TITLE} ${solutionIndex} (${variantTitle}) ${
+  const textToShare = `${GAME_TITLE} ${solutionIndex + 1} (${variantTitle}) ${
     lost ? 'X' : guesses.length
   }/${maxChallenges}${isHardMode ? '*' : ''}\n\n${generateEmojiGrid(
     guesses,
