@@ -9,5 +9,5 @@ export const WELCOME_INFO_MODAL_MS = 350;
 export const EPOCH_LUXON = {
   year: 2022,
   month: 3,
-  day: 26,
+  day: 28,
 };
