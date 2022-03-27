@@ -1,7 +1,7 @@
 import { VariantKey, variantTitles } from "./variants";
 
 export const getVariantKeyOfDay = (solutionIndex: number): VariantKey => {
-  const overrideVariant = 'MINE2' || process.env.REACT_APP_OVERRIDE_VARIANT;
+  const overrideVariant = process.env.REACT_APP_OVERRIDE_VARIANT;
   if (overrideVariant && Object.keys(variantTitles).includes(overrideVariant)) {
     return overrideVariant as VariantKey;
   }
