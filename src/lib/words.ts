@@ -102,7 +102,7 @@ export const getWordOfDay = () => {
   // const nextday = (index + 1) * msInDay + EPOCH;
   const epoch = DateTime.fromObject(EPOCH_LUXON);
   let index = Math.floor(-epoch.diffNow('days').days);
-  const nextDay = DateTime.now().set({
+  let nextDay = DateTime.now().set({
     hour: 0,
     minute: 0,
     second: 0,
@@ -110,6 +110,12 @@ export const getWordOfDay = () => {
   }).plus({
     day: 1
   }).toMillis();
+
+  if (index < 0) {
+    const msInDay = 86400000;
+    nextDay -= msInDay * index;
+    index = 0;
+  }
 
   if (process.env.REACT_APP_SPECIAL_MODE === 'chaoticiteration') {
     index = now;
