@@ -746,7 +746,9 @@ const generateFoulConsonantsAndVowels = (solution: string): string => {
       const letterGroup = consonantGroups.filter((group) => group.includes(x as string)).join('').split('').filter(letter => letter !== x);
 
       const stillSwappableConsonants = solutionSwappableConsonants.filter(letter => letterGroup.includes(letter));
-      if (stillSwappableConsonants.length > 0 && randBetweenRange(0, 5) === 0) {
+      if (stillSwappableConsonants.length === 1) {
+        y = stillSwappableConsonants[0];
+      } else if (stillSwappableConsonants.length > 0 && randBetweenRange(0, 5) === 0) {
         y = stillSwappableConsonants[randBetweenRange(0, stillSwappableConsonants.length)];
       } else {
         const filteredWords = WORDS.filter(word => letterGroup.some(letter => word.includes(letter)));

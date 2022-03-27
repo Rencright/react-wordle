@@ -137,7 +137,7 @@ const modalContentForVariant: Record<VariantKey, Info> = {
         guess: 'BREAK',
         statuses: ['secret', 'secret', 'secret', 'correct', 'correct'],
         explanation:
-          "A and K are in the right spots, but there must be another non-red letter or the red letters wouldn't still be red.",
+          "A and K are in the right spots, but there must be at least one more non-red letter or the red letters wouldn't still be red.",
       },
     ],
   },
@@ -193,7 +193,7 @@ const modalContentForVariant: Record<VariantKey, Info> = {
   },
   FOUL1: {
     description: [
-      "Today's variation: two vowels are swapped - each one appears the colour that the other would appear in its place. More precisely, the game swaps all instance of one letter in your guess for the other before determining colours.",
+      "Today's variation: there are two vowels in the alphabet (not including Y) that are swapped - each one appears the colour that the other would appear in its place. More precisely, the game swaps all instance of one letter in your guess for the other before determining colours.",
       "Vowels in the word are more likely to be swapped, as are more common vowels.",
       "Rest assured that you'll never see an all-green word that's not the correct answer.",
     ],
@@ -208,7 +208,8 @@ const modalContentForVariant: Record<VariantKey, Info> = {
   },
   FOUL2: {
     description: [
-      "Today's variation: two pairs of vowels (not necessarily in the word or not) are swapped - each vowel in a pair will always appear the colour that the other would appear in its place. Vowels in the word are more likely to be swapped, as are more common vowels.",
+      "Today's variation: two pairs of vowels are swapped - each vowel in a pair will always appear the colour that the other would appear in its place.",
+      "Vowels in the word are more likely to be swapped, as are more common vowels.",
       "Rest assured that you'll never see an all-green word that's not the correct answer.",
     ],
     examples: [
@@ -231,6 +232,7 @@ const modalContentForVariant: Record<VariantKey, Info> = {
       "Liquids: L, R.",
       "Nasals: M, N.",
       "Glides: W, Y.",
+      "(H cannot be swapped.)",
       "Rest assured that you'll never see an all-green word that's not the correct answer.",
     ],
     examples: [
@@ -244,7 +246,7 @@ const modalContentForVariant: Record<VariantKey, Info> = {
   },
   BOND1: {
     description: [
-      "Today's variation: two adjacent letters are married - their colour is determined not by which spot they're in, but whether or not the other letter is next to it on the correct side. If the letter appears multiple times in a word, only one instance of the letter is married.",
+      "Today's variation: there are two adjacent letters in the word that are married - their colour is determined not by which spot they're in, but whether or not the other letter is next to it on the correct side. If the letter appears multiple times in a word, only one instance of the letter is married.",
     ],
     examples: [
       {
@@ -301,7 +303,7 @@ const modalContentForVariant: Record<VariantKey, Info> = {
   },
   SHYE1: {
     description: [
-      "Today's variation: one letter in the word is shy. A shy letter will appear grey (not in the word) when it's not in the correct spot.",
+      "Today's variation: one letter in the word is shy. A shy letter will appear grey (not in the word) when it's not in the correct spot, despite being in the word.",
     ],
     examples: [
       {
