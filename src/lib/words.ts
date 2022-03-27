@@ -10,10 +10,10 @@ import {
   generateVariant,
   getVariantKey,
   getVariantTitle,
-  VariantKey,
   variantLimits,
-  variantTitles,
 } from './variants';
+import { EPOCH } from '../constants/settings';
+import { getVariantKeyOfDay } from './variantSchedule';
 
 export const isWordInWordList = (word: string) => {
   return (
@@ -85,92 +85,6 @@ export const localeAwareUpperCase = (text: string) => {
     : text.toUpperCase();
 };
 
-const getVariantKeyOfDay = (solutionIndex: number): VariantKey => {
-  const overrideVariant = process.env.REACT_APP_OVERRIDE_VARIANT;
-  if (overrideVariant && Object.keys(variantTitles).includes(overrideVariant)) {
-    return overrideVariant as VariantKey;
-  }
-
-  switch (solutionIndex % 7) {
-    case 0:
-      return 'AMOG1';
-    case 1:
-      if (solutionIndex % 2 === 0) {
-        return 'GREE1';
-      } else {
-        return 'BOND1';
-      }
-    case 2:
-      return 'TOBE1';
-    case 3:
-      if (solutionIndex % 2 === 0) {
-        return 'SHYE1';
-      } else {
-        return 'MINE1';
-      }
-    case 4:
-      return 'FOUL1';
-    case 5:
-      switch (solutionIndex % 21) {
-        case 5:
-          return 'AMOG2';
-        case 12:
-          return 'TOBE2';
-        case 19:
-          return 'FOUL2';
-        default:
-          console.error('ARITHMETIC ERROR IN DATE SWITCH');
-          return 'AMOG2';
-      }
-    case 6:
-      switch (solutionIndex % 42) {
-        case 6:
-          return 'FOUL2';
-        case 13:
-          return 'FOUL2';
-        case 20:
-          return 'TOBE2';
-        case 27:
-          return 'AMOG3';
-        case 34:
-          return 'AMOG2';
-        case 41:
-          return 'TOBE3';
-        default:
-          console.error('ARITHMETIC ERROR IN DATE SWITCH');
-          return 'AMOG2';
-      }
-  }
-
-  console.error('ARITHMETIC ERROR IN DATE SWITCH');
-  return 'TOBE1';
-  // switch (solutionIndex % 10) {
-  //   case 0:
-  //     return 'TOBE1';
-  //   case 1:
-  //     return 'AMOG1';
-  //   case 2:
-  //     return 'FOUL1';
-  //   case 3:
-  //     return 'GREE1';
-  //   case 4:
-  //     return 'BOND1';
-  //   case 5:
-  //     return 'TOBE2';
-  //   case 6:
-  //     return 'FOUL2';
-  //   case 7:
-  //     return 'AMOG2';
-  //   case 8:
-  //     return 'MINE1';
-  //   case 9:
-  //     return 'SHYE1';
-  //   default:
-  //     console.error('ERROR - integers have stopped working!');
-  //     return 'GREE1';
-  // }
-};
-
 export const getVariantOfDay = (data: {
   solution: string;
   solutionIndex: number;
@@ -181,12 +95,10 @@ export const getVariantOfDay = (data: {
 };
 
 export const getWordOfDay = () => {
-  // March 22, 2022 Game Epoch
-  const epochMs = new Date(2022, 2, 22).valueOf();
   const now = Date.now();
   const msInDay = 86400000;
-  let index = Math.floor((now - epochMs) / msInDay);
-  const nextday = (index + 1) * msInDay + epochMs;
+  let index = Math.floor((now - EPOCH) / msInDay);
+  const nextday = (index + 1) * msInDay + EPOCH;
 
   if (process.env.REACT_APP_SPECIAL_MODE === 'chaoticiteration') {
     index = now;

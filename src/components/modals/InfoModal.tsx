@@ -117,7 +117,7 @@ const modalContentForVariant: Record<VariantKey, Info> = {
   },
   TOBE3: {
     description: [
-      "Today's variation: the letters T, O, B, and E, R, and N are ALL red. They will only change colour if you place all other letters correctly.",
+      "Today's variation: the letters T, O, B, E, R, and N are ALL red. They will only change colour if you place all other letters correctly.",
       'There are some words that can be spelled entirely using these letters.',
     ],
     examples: [
@@ -166,9 +166,35 @@ const modalContentForVariant: Record<VariantKey, Info> = {
       },
     ],
   },
+  GREE2: {
+    description: [
+      "Today's variation: two letters in the word are happy. A happy letter always thinks it's in the right spot - it will appear green (or orange - right letter in right spot) whenever it would appear yellow (or blue - right letter in wrong spot).",
+    ],
+    examples: [
+      {
+        guess: 'WEARY',
+        statuses: [null, null, 'correct', null, null],
+        explanation:
+          'The letter A is in the word. It could be in the correct spot, or it could be a happy letter.',
+      },
+      {
+        guess: 'EMCEE',
+        statuses: ['correct', null, null, 'correct', 'absent'],
+        explanation:
+          'The letter E occurs twice. It occurs in the first and fourth position, unless E is a happy letter, in which case it could occur in any two spots.',
+      },
+      {
+        guess: 'NAVAL',
+        statuses: [null, 'absent', null, 'correct', null],
+        explanation:
+          'The letter A is in the fourth spot. We know this for a fact whether A is a happy letter or not.',
+      },
+    ],
+  },
   FOUL1: {
     description: [
-      "Today's variation: two vowels are swapped - each one appears the colour that the other should be. Vowels in the word are more likely to be swapped, as are more common vowels.",
+      "Today's variation: two vowels are swapped - each one appears the colour that the other would appear in its place. More precisely, the game swaps all instance of one letter in your guess for the other before determining colours.",
+      "Vowels in the word are more likely to be swapped, as are more common vowels.",
       "Rest assured that you'll never see an all-green word that's not the correct answer.",
     ],
     examples: [
@@ -182,7 +208,7 @@ const modalContentForVariant: Record<VariantKey, Info> = {
   },
   FOUL2: {
     description: [
-      "Today's variation: two pairs vowels are swapped - each vowel in a pair appears the colour that the other should be. Vowels in the word are more likely to be swapped, as are more common vowels.",
+      "Today's variation: two pairs of vowels (not necessarily in the word or not) are swapped - each vowel in a pair will always appear the colour that the other would appear in its place. Vowels in the word are more likely to be swapped, as are more common vowels.",
       "Rest assured that you'll never see an all-green word that's not the correct answer.",
     ],
     examples: [
@@ -190,7 +216,29 @@ const modalContentForVariant: Record<VariantKey, Info> = {
         guess: 'VIDEO',
         statuses: [null, 'present', null, 'correct', 'absent'],
         explanation:
-          'It appears that I is in the word but not in the second spot, E is in the fourth spot, and O is not in the word, but that could be wrong. If O and E are swapped, then O belongs in the fourth spot and E is not in the word. If O and I are swapped, then O is somewhere but not the second spot and I is not in the word. If A and E are swapped, then A is in the fourth spot and we have no real information about E. Remember that there are two different swaps, so all informatoin on all but one vowel is wrong.',
+          'It appears that I is in the word but not in the second spot, E is in the fourth spot, and O is not in the word, but that could be wrong. If O and E are swapped, then O belongs in the fourth spot and E is not in the word. If O and I are swapped, then O is somewhere but not the second spot and I is not in the word. If A and E are swapped, then A is in the fourth spot and we have no real information about E. Remember that there are two different swaps, so all information on all but one vowel is wrong.',
+      },
+    ],
+  },
+  FOUL3: {
+    description: [
+      "Today's variation: two pairs of vowels are swapped - each vowel in a pair appears the colour that the other would appear in its place. Vowels in the word are more likely to be swapped, as are more common vowels.",
+      "In addition, two consonants are swapped. The swapped consonants will both be in one of the following groups:",
+      "Voiced stops: B, D, G.",
+      "Voiceless stops: C, K, P, Q, T.",
+      "Voiced fricatives/affricates: G, J, V, Z.",
+      "Voiceless fricatives/affricates: C, F, S, X.",
+      "Liquids: L, R.",
+      "Nasals: M, N.",
+      "Glides: W, Y.",
+      "Rest assured that you'll never see an all-green word that's not the correct answer.",
+    ],
+    examples: [
+      {
+        guess: 'VIDEO',
+        statuses: ['present', 'present', 'absent', 'correct', 'absent'],
+        explanation:
+          'It appears that I is in the word but not in the second spot, E is in the fourth spot, and O is not in the word, but that could be wrong. If O and E are swapped, then O belongs in the fourth spot and E is not in the word. If O and I are swapped, then O is somewhere but not the second spot and I is not in the word. If A and E are swapped, then A is in the fourth spot and we have no real information about E. In addition, V could be swapped with G, J, or Z, or D could be swapped with B or G.',
       },
     ],
   },
@@ -232,9 +280,28 @@ const modalContentForVariant: Record<VariantKey, Info> = {
       },
     ],
   },
+  MINE2: {
+    description: [
+      "Today's variation: two letters that are not in the word are classified - if you use one of them in a word, you get no information from that word.",
+    ],
+    examples: [
+      {
+        guess: 'FRANK',
+        statuses: ['secret', 'secret', 'secret', 'secret', 'secret'],
+        explanation:
+          'At least one of the letters F, R, A, N, or K is a classified letter, and thus not in the word. That is all you learn from this guess.',
+      },
+      {
+        guess: 'BLING',
+        statuses: ['absent', 'present', 'correct', 'absent', 'absent'],
+        explanation:
+          "B, N, and G are not in the word, but they're not classified letters, so you can safely use them in other guesses.",
+      },
+    ],
+  },
   SHYE1: {
     description: [
-      "Today's variation: one letter in the word is shy. A shy letter will appear grey (not in the word) unless it's in the correct spot.",
+      "Today's variation: one letter in the word is shy. A shy letter will appear grey (not in the word) when it's not in the correct spot.",
     ],
     examples: [
       {
@@ -248,6 +315,25 @@ const modalContentForVariant: Record<VariantKey, Info> = {
         statuses: ['correct', null, null, null, null],
         explanation:
           "B is in the word in the first position, whether it's the shy letter or not.",
+      },
+    ],
+  },
+  SHYE2: {
+    description: [
+      "Today's variation: two letters in the word are shy. A shy letter will appear grey (not in the word) when it's not in the correct spot.",
+    ],
+    examples: [
+      {
+        guess: 'FLYER',
+        statuses: [null, null, null, 'absent', null],
+        explanation:
+          "The letter E is not in the word, unless it's a shy letter, in which case it's not in the fourth position.",
+      },
+      {
+        guess: 'BOOTS',
+        statuses: ['correct', null, null, null, null],
+        explanation:
+          "B is in the word in the first position, whether it's a shy letter or not.",
       },
     ],
   },

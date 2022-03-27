@@ -1,5 +1,4 @@
 /* eslint-disable no-loop-func */
-// import { solutionIndex } from "./words";
 import { VALID_GUESSES } from '../constants/validGuesses';
 import { WORDS } from '../constants/wordlist';
 import { randBetweenRange } from './random';
@@ -24,7 +23,11 @@ export type VariantKey =
   | 'MINE1'
   | 'SHYE1'
   | 'TOBE3'
-  | 'AMOG3';
+  | 'AMOG3'
+  | 'GREE2'
+  | 'SHYE2'
+  | 'MINE2'
+  | 'FOUL3';
 
 export const variantTitles: Record<VariantKey, string> = {
   FOUL1: 'Fair is Foul',
@@ -38,9 +41,13 @@ export const variantTitles: Record<VariantKey, string> = {
   FOUL2: 'Fair is Foul II',
   TOBE2: 'To Be or Not to Be II',
   AMOG2: 'Two Impostors',
+  GREE2: 'The Optimist II',
+  SHYE2: "Don't Be Shy II",
+  MINE2: '[DATA EXPUNGED]',
 
   TOBE3: 'To Be or Not to Be III',
   AMOG3: 'Three Impostors',
+  FOUL3: 'Fair is Foul III',
 };
 
 export const variantLimits: Record<VariantKey, number> = {
@@ -52,12 +59,16 @@ export const variantLimits: Record<VariantKey, number> = {
   MINE1: 7,
   SHYE1: 7,
 
-  FOUL2: 8,
+  FOUL2: 9,
   TOBE2: 8,
   AMOG2: 8,
+  GREE2: 8,
+  SHYE2: 8,
+  MINE2: 9,
 
   TOBE3: 10,
   AMOG3: 9,
+  FOUL3: 12,
 };
 
 export type VariantStatusModifier = {
@@ -122,6 +133,14 @@ const augmentCharObjForVariant = (charObj: { [key: string]: CharStatus }) => {
         charObj[variant[6]] = 'correct';
       }
       break;
+    case 'GREE2':
+      if (charObj[variant[6]] === 'present') {
+        charObj[variant[6]] = 'correct';
+      }
+      if (charObj[variant[7]] === 'present') {
+        charObj[variant[7]] = 'correct';
+      }
+      break;
     case 'BOND1':
       Object.keys(charObj).forEach((char) => {
         if (charObj[char] === 'correct') {
@@ -134,6 +153,14 @@ const augmentCharObjForVariant = (charObj: { [key: string]: CharStatus }) => {
         charObj[variant[6]] = 'absent';
       }
       break;
+    case 'SHYE2':
+      if (charObj[variant[6]] === 'present') {
+        charObj[variant[6]] = 'absent';
+      }
+      if (charObj[variant[7]] === 'present') {
+        charObj[variant[7]] = 'absent';
+      }
+      break;
   }
   return charObj;
 };
@@ -142,6 +169,7 @@ export const getVariantKeyboardStatusModifier = (
   guesses: string[]
 ): VariantKeyboardStatusModifier => {
   const variantKey = getVariantKey(variant);
+  let swaps: string;
   switch (variantKey) {
     case 'FOUL1':
       const swap1 = variant[6];
@@ -153,7 +181,7 @@ export const getVariantKeyboardStatusModifier = (
           .replaceAll('!', swap2),
       };
     case 'FOUL2':
-      const swaps = variant.substr(6);
+      swaps = variant.substr(6);
       return {
         solution: solution
           .replaceAll(swaps[0], '!')
@@ -163,9 +191,27 @@ export const getVariantKeyboardStatusModifier = (
           .replaceAll(swaps[3], swaps[2])
           .replaceAll('!', swaps[3]),
       };
+    case 'FOUL3':
+      swaps = variant.substr(6);
+      return {
+        solution: solution
+          .replaceAll(swaps[0], '!')
+          .replaceAll(swaps[1], swaps[0])
+          .replaceAll('!', swaps[1])
+          .replaceAll(swaps[2], '!')
+          .replaceAll(swaps[3], swaps[2])
+          .replaceAll('!', swaps[3])
+          .replaceAll(swaps[4], '!')
+          .replaceAll(swaps[5], swaps[4])
+          .replaceAll('!', swaps[5]),
+      };
     case 'MINE1':
       return {
         guesses: guesses.filter((guess) => !guess.includes(variant[6])),
+      };
+    case 'MINE2':
+      return {
+        guesses: guesses.filter((guess) => !guess.includes(variant[6]) && !guess.includes(variant[7])),
       };
     default:
       return { tweak: (charObj) => augmentCharObjForVariant(charObj) };
@@ -176,7 +222,8 @@ export const getVariantStatusModifier = (
   guess: string
 ): VariantStatusModifier => {
   const variantKey = getVariantKey(variant);
-  let impostors: string[];
+  let lettersOfNote: string[];
+  let swaps: string;
   switch (variantKey) {
     case 'AMOG1':
       const impostor = variant[6];
@@ -187,19 +234,19 @@ export const getVariantStatusModifier = (
           ),
       };
     case 'AMOG2':
-      impostors = [variant[6], variant[7]];
+      lettersOfNote = [variant[6], variant[7]];
       return {
         tweak: (statuses) =>
           statuses.map((status, i) =>
-            impostors.includes(guess[i]) ? 'present' : status
+            lettersOfNote.includes(guess[i]) ? 'present' : status
           ),
       };
     case 'AMOG3':
-      impostors = [variant[6], variant[7], variant[8]];
+      lettersOfNote = [variant[6], variant[7], variant[8]];
       return {
         tweak: (statuses) =>
           statuses.map((status, i) =>
-            impostors.includes(guess[i]) ? 'present' : status
+            lettersOfNote.includes(guess[i]) ? 'present' : status
           ),
       };
     case 'TOBE1':
@@ -263,7 +310,7 @@ export const getVariantStatusModifier = (
           .replaceAll('!', swap2),
       };
     case 'FOUL2':
-      const swaps = variant.substr(6);
+      swaps = variant.substr(6);
       return {
         solution: solution
           .replaceAll(swaps[0], '!')
@@ -273,11 +320,33 @@ export const getVariantStatusModifier = (
           .replaceAll(swaps[3], swaps[2])
           .replaceAll('!', swaps[3]),
       };
+    case 'FOUL3':
+      swaps = variant.substr(6);
+      return {
+        solution: solution
+          .replaceAll(swaps[0], '!')
+          .replaceAll(swaps[1], swaps[0])
+          .replaceAll('!', swaps[1])
+          .replaceAll(swaps[2], '!')
+          .replaceAll(swaps[3], swaps[2])
+          .replaceAll('!', swaps[3])
+          .replaceAll(swaps[4], '!')
+          .replaceAll(swaps[5], swaps[4])
+          .replaceAll('!', swaps[5]),
+      };
     case 'GREE1':
       return {
         tweak: (statuses) =>
           statuses.map((status, i) =>
             guess[i] === variant[6] && status === 'present' ? 'correct' : status
+          ),
+      };
+    case 'GREE2':
+      const happyLetters = [variant[6], variant[7]];
+      return {
+        tweak: (statuses) =>
+          statuses.map((status, i) =>
+            happyLetters.includes(guess[i]) && status === 'present' ? 'correct' : status
           ),
       };
     case 'BOND1':
@@ -389,11 +458,27 @@ export const getVariantStatusModifier = (
       } else {
         return {};
       }
+    case 'MINE2':
+      if (guess.includes(variant[6]) || guess.includes(variant[7])) {
+        return {
+          override: ['secret', 'secret', 'secret', 'secret', 'secret'],
+        };
+      } else {
+        return {};
+      }
     case 'SHYE1':
       return {
         tweak: (statuses) =>
           statuses.map((status, i) =>
             guess[i] === variant[6] && status === 'present' ? 'absent' : status
+          ),
+      };
+    case 'SHYE2':
+      lettersOfNote = [variant[6], variant[7]];
+      return {
+        tweak: (statuses) =>
+          statuses.map((status, i) =>
+            lettersOfNote.includes(guess[i]) && status === 'present' ? 'absent' : status
           ),
       };
   }
@@ -428,13 +513,16 @@ export const generateImpostor = (solution: string, bannedLetters: string[]) => {
   return localeAwareUpperCase(impostor);
 };
 
-const generateFoulPairs = (solution: string, numPairs: number): string => {
+const generateFoulVowels = (solution: string, numPairs: number, existingPairs?: string[][]): string => {
+  const originalPairs = existingPairs ? [...existingPairs] : [];
+
   const solutionLower = localeAwareLowerCase(solution);
   const solutionVowels = unicodeSplit(solutionLower).filter((letter) =>
     'aeiou'.includes(letter)
   );
   let includedLetters: string[] = [];
-  let includedPairs: string[][] = [];
+  let includedPairs: string[][] = [...originalPairs];
+
   let numResets = 0;
 
   while (includedPairs.length < numPairs) {
@@ -574,12 +662,12 @@ const generateFoulPairs = (solution: string, numPairs: number): string => {
       includedLetters.push(x, y);
       includedPairs.push([x, y]);
       // console.log('ADDED!', x, y);
-    } else if (includedLetters.length > 0 && numResets < 5) {
+    } else if (numResets < 5) {
       // console.log(':(');
       // console.log(includedLetters);
       // console.log(x, y);
       includedLetters = [];
-      includedPairs = [];
+      includedPairs = [...originalPairs];
       numResets += 1;
       tries = 0;
     } else {
@@ -591,11 +679,109 @@ const generateFoulPairs = (solution: string, numPairs: number): string => {
   return localeAwareUpperCase(includedLetters.join(''));
 };
 
+const generateFoulConsonantsAndVowels = (solution: string): string => {
+  const consonantGroups = [
+    'bdg',
+    'ckpqt',
+    'cfsx',
+    'gjvz',
+    // 'BCDGKPQT',
+    // 'CFGJSVXZ',
+    'lr',
+    'mn',
+    'wy',
+  ];
+
+  const solutionLower = localeAwareLowerCase(solution);
+  const solutionSwappableConsonants = unicodeSplit(solutionLower).filter((letter) =>
+    !'haeiou'.includes(letter)
+  );
+
+  let x: string | null = null;
+  let y: string | null = null;
+  let vowels: string | null = null;
+  let tries = 0;
+  while (x === null || y === null) {
+    x = null;
+    y = null;
+    if (tries > 10) {
+      const possiblePairs = [
+        'lr',
+        'mn',
+        'pt',
+        'sc',
+        'sf',
+        'tc',
+        'gv',
+        'gj',
+        'vz',
+        'bd',
+        'bg',
+        'dg',
+        'wy',
+        'xz',
+      ];
+      for (let pair of possiblePairs) {
+        vowels = generateFoulVowels(solution, 3, [[pair[0], pair[1]]]);
+        if (vowels.length === 4) {
+          return localeAwareUpperCase(pair + vowels);
+        }
+      }
+      console.log(':(');
+      return '';
+    }
+
+    if (solutionSwappableConsonants.length > 0 && randBetweenRange(0, 3) === 0) {
+      x = solutionSwappableConsonants[randBetweenRange(0, solutionSwappableConsonants.length)];
+    } else {
+      const word = WORDS[randBetweenRange(0, WORDS.length)];
+      const wordConsonants = unicodeSplit(word).filter((letter) =>
+        !'haeiou'.includes(letter)
+      );
+      if (wordConsonants.length > 0) {
+        x = wordConsonants[randBetweenRange(0, wordConsonants.length)];
+      }
+    }
+    if (x !== null) {
+      const letterGroup = consonantGroups.filter((group) => group.includes(x as string)).join('').split('').filter(letter => letter !== x);
+
+      const stillSwappableConsonants = solutionSwappableConsonants.filter(letter => letterGroup.includes(letter));
+      if (stillSwappableConsonants.length > 0 && randBetweenRange(0, 5) === 0) {
+        y = stillSwappableConsonants[randBetweenRange(0, stillSwappableConsonants.length)];
+      } else {
+        const filteredWords = WORDS.filter(word => letterGroup.some(letter => word.includes(letter)));
+        const word = filteredWords[randBetweenRange(0, filteredWords.length)];
+        const wordConsonants = unicodeSplit(word).filter((letter) =>
+          letterGroup.includes(letter)
+        );
+        if (wordConsonants.length > 0) {
+          y = wordConsonants[randBetweenRange(0, wordConsonants.length)];
+        }
+      }
+    }
+    if (x && y) {
+      vowels = generateFoulVowels(solution, 3, [[x, y]]);
+      // console.log(x, y, vowels);
+      if (vowels.length < 4) {
+        x = null;
+        y = null;
+      }
+    }
+    tries += 1;
+  }
+  if (x && y && vowels) {
+    return localeAwareUpperCase(x + y + vowels);
+  } else {
+    return '';
+  }
+}
+
 export const generateVariant = (solution: string, key: VariantKey): string => {
   let foulLetters: string;
-  let impostor1: string;
-  let impostor2: string;
-  let impostor3: string;
+  let modifiedWord: string | string[];
+  let letter1: string;
+  let letter2: string;
+  let letter3: string;
   switch (key) {
     case 'TOBE1':
     case 'TOBE2':
@@ -604,38 +790,59 @@ export const generateVariant = (solution: string, key: VariantKey): string => {
     case 'AMOG1':
       return `AMOG1:${generateImpostor(solution, [])}`;
     case 'AMOG2':
-      impostor1 = generateImpostor(solution, []);
-      impostor2 = generateImpostor(solution, [impostor1]);
-      return `AMOG2:${impostor1}${impostor2}`;
+      letter1 = generateImpostor(solution, []);
+      letter2 = generateImpostor(solution, [letter1]);
+      return `AMOG2:${letter1}${letter2}`;
     case 'AMOG3':
-      impostor1 = generateImpostor(solution, []);
-      impostor2 = generateImpostor(solution, [impostor1]);
-      impostor3 = generateImpostor(solution, [impostor1, impostor2]);
-      return `AMOG3:${impostor1}${impostor2}${impostor3}`;
+      letter1 = generateImpostor(solution, []);
+      letter2 = generateImpostor(solution, [letter1]);
+      letter3 = generateImpostor(solution, [letter1, letter2]);
+      return `AMOG3:${letter1}${letter2}${letter3}`;
     case 'FOUL1':
-      foulLetters = generateFoulPairs(solution, 1);
-      if (foulLetters.length === 0) {
+      foulLetters = generateFoulVowels(solution, 1);
+      if (foulLetters.length < 2) {
         console.error('FAILED TO GENERATE FOUL PAIR!');
         return 'TOBE1';
       }
       return `FOUL1:${foulLetters}`;
     case 'FOUL2':
-      foulLetters = generateFoulPairs(solution, 2);
-      if (foulLetters.length === 0) {
+      foulLetters = generateFoulVowels(solution, 2);
+      if (foulLetters.length < 4) {
         console.error('FAILED TO GENERATE FOUL PAIRS!');
         return 'TOBE2';
       }
       return `FOUL2:${foulLetters}`;
+    case 'FOUL3':
+      foulLetters = generateFoulConsonantsAndVowels(solution);
+      if (foulLetters.length < 6) {
+        console.error('FAILED TO GENERATE FOUL PAIRS!');
+        return 'TOBE3';
+      }
+      return `FOUL3:${foulLetters}`;
     case 'GREE1':
-      let greenLetter = solution[randBetweenRange(0, 5)];
-      return `GREE1:${greenLetter}`;
+      letter1 = solution[randBetweenRange(0, 5)];
+      return `GREE1:${letter1}`;
+    case 'GREE2':
+      letter1 = solution[randBetweenRange(0, 5)];
+      modifiedWord = unicodeSplit(solution).filter(letter => letter !== letter1);
+      letter2 = modifiedWord[randBetweenRange(0, modifiedWord.length)];
+      return `GREE2:${letter1}${letter2}`;
     case 'BOND1':
       let n = randBetweenRange(1, 5);
       return `BOND1:${n}`;
     case 'MINE1':
       return `MINE1:${generateImpostor(solution, [])}`;
+    case 'MINE2':
+      letter1 = generateImpostor(solution, []);
+      letter2 = generateImpostor(solution, [letter1]);
+      return `MINE2:${letter1}${letter2}`;
     case 'SHYE1':
       let shyLetter = solution[randBetweenRange(0, 5)];
       return `SHYE1:${shyLetter}`;
+    case 'SHYE2':
+      letter1 = solution[randBetweenRange(0, 5)];
+      modifiedWord = unicodeSplit(solution).filter(letter => letter !== letter1);
+      letter2 = modifiedWord[randBetweenRange(0, modifiedWord.length)];
+      return `SHYE2:${letter1}${letter2}`;
   }
 };
