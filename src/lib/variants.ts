@@ -27,7 +27,9 @@ export type VariantKey =
   | 'GREE2'
   | 'SHYE2'
   | 'MINE2'
-  | 'FOUL3';
+  | 'FOUL3'
+  | 'SHIF1'
+  | 'SHIF2';
 
 export const variantTitles: Record<VariantKey, string> = {
   FOUL1: 'Fair is Foul',
@@ -37,6 +39,7 @@ export const variantTitles: Record<VariantKey, string> = {
   BOND1: 'Sweet Sorrow',
   MINE1: '[REDACTED]',
   SHYE1: "Don't Be Shy",
+  SHIF1: 'Out of Touch',
 
   FOUL2: 'Fair is Foul II',
   TOBE2: 'To Be or Not to Be II',
@@ -44,6 +47,7 @@ export const variantTitles: Record<VariantKey, string> = {
   GREE2: 'The Optimist II',
   SHYE2: "Don't Be Shy II",
   MINE2: '[DATA EXPUNGED]',
+  SHIF2: 'Out of Touch II',
 
   TOBE3: 'To Be or Not to Be III',
   AMOG3: 'Three Impostors',
@@ -58,6 +62,7 @@ export const variantLimits: Record<VariantKey, number> = {
   BOND1: 7,
   MINE1: 7,
   SHYE1: 7,
+  SHIF1: 6,
 
   FOUL2: 9,
   TOBE2: 8,
@@ -65,6 +70,7 @@ export const variantLimits: Record<VariantKey, number> = {
   GREE2: 8,
   SHYE2: 8,
   MINE2: 9,
+  SHIF2: 7,
 
   TOBE3: 10,
   AMOG3: 9,
@@ -481,6 +487,9 @@ export const getVariantStatusModifier = (
             lettersOfNote.includes(guess[i]) && status === 'present' ? 'absent' : status
           ),
       };
+    case 'SHIF1':
+    case 'SHIF2':
+      return {};
   }
 };
 
@@ -846,5 +855,9 @@ export const generateVariant = (solution: string, key: VariantKey): string => {
       modifiedWord = unicodeSplit(solution).filter(letter => letter !== letter1);
       letter2 = modifiedWord[randBetweenRange(0, modifiedWord.length)];
       return `SHYE2:${letter1}${letter2}`;
+    case 'SHIF1':
+      return `SHIF1:${[0, 1, 4][randBetweenRange(0, 3)]}`
+    case 'SHIF2':
+      return `SHIF2:${randBetweenRange(0, 5)}`
   }
 };

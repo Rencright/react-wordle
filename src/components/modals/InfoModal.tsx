@@ -339,6 +339,56 @@ const modalContentForVariant: Record<VariantKey, Info> = {
       },
     ],
   },
+  SHIF1: {
+    description: [
+      "Today's variation: the word list includes words where one letter was removed from one end and added to the other. This applies to guesses and the solution.",
+    ],
+    examples: [
+      {
+        guess: 'BREAD',
+        statuses: [null, null, null, null, null],
+        explanation:
+          'BREAD is valid because it\'s a word.',
+      },
+      {
+        guess: 'RANEC',
+        statuses: [null, null, null, null, null],
+        explanation:
+          'RANEC is valid because CRANE is a word.',
+      },
+      {
+        guess: 'YDECO',
+        statuses: [null, null, null, null, null],
+        explanation:
+          'YDECO is valid because DECOY is a word.',
+      },
+    ],
+  },
+  SHIF2: {
+    description: [
+      "Today's variation: the word list includes words where any number of letters were removed from one end and added to the other. This applies to guesses and the solution.",
+    ],
+    examples: [
+      {
+        guess: 'BREAD',
+        statuses: [null, null, null, null, null],
+        explanation:
+          'BREAD is valid because it\'s a word.',
+      },
+      {
+        guess: 'ANECR',
+        statuses: [null, null, null, null, null],
+        explanation:
+          'ANECR is valid because CRANE is a word.',
+      },
+      {
+        guess: 'YDECO',
+        statuses: [null, null, null, null, null],
+        explanation:
+          'YDECO is valid because DECOY is a word.',
+      },
+    ],
+  },
 };
 
 export const InfoModal = ({ isOpen, handleClose }: Props) => {

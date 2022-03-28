@@ -95,11 +95,49 @@ export const getVariantOfDay = (data: {
   return generateVariant(data.solution, variantKey);
 };
 
+const shiftWord = (word: string, shift: number) => {
+  if (shift === 0) {
+    return word;
+  }
+  return `${word.substr(shift)}${word.substr(0, shift)}`;
+}
+
+const modifySolutionAndSettingsForVariant = (variant: string, solution: string): string => {
+  if (getVariantKey(variant) === 'SHIF1') {
+    const wordlistLength = WORDS.length;
+    const validGuessesLength = VALID_GUESSES.length;
+    for (let i = 0; i < wordlistLength; ++i) {
+      WORDS.push(shiftWord(WORDS[i], 1));
+      WORDS.push(shiftWord(WORDS[i], 4));
+    }
+    for (let i = 0; i < validGuessesLength; ++i) {
+      VALID_GUESSES.push(shiftWord(VALID_GUESSES[i], 1));
+      VALID_GUESSES.push(shiftWord(VALID_GUESSES[i], 4));
+    }
+    return shiftWord(solution, parseInt(variant[6]));
+  }
+  if (getVariantKey(variant) === 'SHIF2') {
+    const wordlistLength = WORDS.length;
+    const validGuessesLength = VALID_GUESSES.length;
+    for (let i = 0; i < wordlistLength; ++i) {
+      WORDS.push(shiftWord(WORDS[i], 1));
+      WORDS.push(shiftWord(WORDS[i], 2));
+      WORDS.push(shiftWord(WORDS[i], 3));
+      WORDS.push(shiftWord(WORDS[i], 4));
+    }
+    for (let i = 0; i < validGuessesLength; ++i) {
+      VALID_GUESSES.push(shiftWord(VALID_GUESSES[i], 1));
+      VALID_GUESSES.push(shiftWord(VALID_GUESSES[i], 2));
+      VALID_GUESSES.push(shiftWord(VALID_GUESSES[i], 3));
+      VALID_GUESSES.push(shiftWord(VALID_GUESSES[i], 4));
+    }
+    return shiftWord(solution, parseInt(variant[6]));
+  }
+  return solution;
+};
+
 export const getWordOfDay = () => {
   const now = Date.now();
-  // const msInDay = 86400000;
-  // let index = Math.floor((now - EPOCH) / msInDay);
-  // const nextday = (index + 1) * msInDay + EPOCH;
   const epoch = DateTime.fromObject(EPOCH_LUXON);
   let index = Math.floor(-epoch.diffNow('days').days);
   let nextDay = DateTime.now().set({
@@ -126,6 +164,8 @@ export const getWordOfDay = () => {
     solution,
     solutionIndex: index,
   });
+
+  solution = modifySolutionAndSettingsForVariant(variant, solution);
 
   return {
     solution,
