@@ -29,7 +29,9 @@ export type VariantKey =
   | 'MINE2'
   | 'FOUL3'
   | 'SHIF1'
-  | 'SHIF2';
+  | 'SHIF2'
+  | 'OUTO1'
+  | 'OUTO2';
 
 export const variantTitles: Record<VariantKey, string> = {
   FOUL1: 'Fair is Foul',
@@ -39,7 +41,8 @@ export const variantTitles: Record<VariantKey, string> = {
   BOND1: 'Sweet Sorrow',
   MINE1: '[REDACTED]',
   SHYE1: "Don't Be Shy",
-  SHIF1: 'Out of Touch',
+  SHIF1: 'Shifty',
+  OUTO1: 'Out of Touch',
 
   FOUL2: 'Fair is Foul II',
   TOBE2: 'To Be or Not to Be II',
@@ -47,7 +50,8 @@ export const variantTitles: Record<VariantKey, string> = {
   GREE2: 'The Optimist II',
   SHYE2: "Don't Be Shy II",
   MINE2: '[DATA EXPUNGED]',
-  SHIF2: 'Out of Touch II',
+  SHIF2: 'Shifty II',
+  OUTO2: 'Out of Touch II',
 
   TOBE3: 'To Be or Not to Be III',
   AMOG3: 'Three Impostors',
@@ -63,6 +67,7 @@ export const variantLimits: Record<VariantKey, number> = {
   MINE1: 7,
   SHYE1: 7,
   SHIF1: 6,
+  OUTO1: 6,
 
   FOUL2: 9,
   TOBE2: 8,
@@ -71,6 +76,7 @@ export const variantLimits: Record<VariantKey, number> = {
   SHYE2: 8,
   MINE2: 9,
   SHIF2: 7,
+  OUTO2: 7,
 
   TOBE3: 10,
   AMOG3: 9,
@@ -219,6 +225,12 @@ export const getVariantKeyboardStatusModifier = (
       return {
         guesses: guesses.filter((guess) => !guess.includes(variant[6]) && !guess.includes(variant[7])),
       };
+    case 'OUTO1':
+    case 'OUTO2':
+      // No information is reliable so don't even try.
+      return {
+        override: {},
+      };
     default:
       return { tweak: (charObj) => augmentCharObjForVariant(charObj) };
   }
@@ -230,6 +242,7 @@ export const getVariantStatusModifier = (
   const variantKey = getVariantKey(variant);
   let lettersOfNote: string[];
   let swaps: string;
+  let num1: number;
   switch (variantKey) {
     case 'AMOG1':
       const impostor = variant[6];
@@ -490,6 +503,12 @@ export const getVariantStatusModifier = (
     case 'SHIF1':
     case 'SHIF2':
       return {};
+    case 'OUTO1':
+    case 'OUTO2':
+      num1 = parseInt(variant[6]);
+      return {
+        tweak: (statuses) => statuses.slice(num1).concat(statuses.slice(0, num1)),
+      };
   }
 };
 
@@ -856,8 +875,12 @@ export const generateVariant = (solution: string, key: VariantKey): string => {
       letter2 = modifiedWord[randBetweenRange(0, modifiedWord.length)];
       return `SHYE2:${letter1}${letter2}`;
     case 'SHIF1':
-      return `SHIF1:${[0, 1, 4][randBetweenRange(0, 3)]}`
+      return `SHIF1:${[0, 1, 4][randBetweenRange(0, 3)]}`;
     case 'SHIF2':
-      return `SHIF2:${randBetweenRange(0, 5)}`
+      return `SHIF2:${randBetweenRange(0, 5)}`;
+    case 'OUTO1':
+      return `OUTO1:${[1, 4][randBetweenRange(0, 2)]}`;
+    case 'OUTO2':
+      return `OUTO2:${randBetweenRange(0, 5)}`;
   }
 };

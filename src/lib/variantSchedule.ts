@@ -23,7 +23,7 @@ export const getVariantKeyOfDay = (solutionIndex: number): VariantKey => {
       if (solutionIndex % 2 === 1) {
         return difficultyPlus ? 'SHYE2' : 'SHYE1';
       } else {
-        return difficultyPlus ? 'SHIF2' : 'SHIF1';
+        return difficultyPlus ? 'OUTO2' : 'OUTO1';
       }
     case 4:
       return difficultyPlus ? 'FOUL2' : 'FOUL1';

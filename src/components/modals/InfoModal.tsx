@@ -389,6 +389,35 @@ const modalContentForVariant: Record<VariantKey, Info> = {
       },
     ],
   },
+  OUTO1: {
+    description: [
+      "Today's variation: each row of colours is shifted once either left or right (same direction each time).",
+    ],
+    examples: [
+      {
+        guess: 'TOUCH',
+        statuses: [null, 'correct', null, null, null],
+        explanation: 'Either T is in spot 1 or U is in spot 3.',
+      },
+      {
+        guess: 'SPARE',
+        statuses: ['present', null, null, null, null],
+        explanation: 'Either P is in the word but not in spot 2, or E is in the word but not in spot 5.',
+      }
+    ],
+  },
+  OUTO2: {
+    description: [
+      "Today's variation: each row of colours is shifted (the same amount each time).",
+    ],
+    examples: [
+      {
+        guess: 'TOUCH',
+        statuses: [null, 'correct', 'present', null, null],
+        explanation: 'One letter is in the correct spot, and the letter after it is in the word but in the wrong spot.',
+      },
+    ],
+  }
 };
 
 export const InfoModal = ({ isOpen, handleClose }: Props) => {
