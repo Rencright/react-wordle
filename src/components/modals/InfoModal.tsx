@@ -208,7 +208,7 @@ const modalContentForVariant: Record<VariantKey, Info> = {
   },
   FOUL2: {
     description: [
-      "Today's variation: two pairs of vowels are swapped - each vowel in a pair will always appear the colour that the other would appear in its place.",
+      "Today's variation: two pairs of vowels (not including Y) are swapped - each vowel in a pair will always appear the colour that the other would appear in its place.",
       "Vowels in the word are more likely to be swapped, as are more common vowels.",
       "Rest assured that you'll never see an all-green word that's not the correct answer.",
     ],
@@ -223,7 +223,7 @@ const modalContentForVariant: Record<VariantKey, Info> = {
   },
   FOUL3: {
     description: [
-      "Today's variation: two pairs of vowels are swapped - each vowel in a pair appears the colour that the other would appear in its place. Vowels in the word are more likely to be swapped, as are more common vowels.",
+      "Today's variation: two pairs of vowels (not including Y) are swapped - each vowel in a pair appears the colour that the other would appear in its place. Vowels in the word are more likely to be swapped, as are more common vowels.",
       "In addition, two consonants are swapped. The swapped consonants will both be in one of the following groups:",
       "Voiced stops: B, D, G.",
       "Voiceless stops: C, K, P, Q, T.",
